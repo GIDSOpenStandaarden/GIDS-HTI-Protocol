@@ -165,6 +165,57 @@ In the example below, show an example of such a reference as `ActivityDefinition
     }
   }
 ```
+The HTI:core standard defines that the reference format MUST align with the FHIR reference format.
+
+The HTI standard defines different ways of serialization, in the HTI:core standard the encoding MUST be JSON. For the exchange of FHIR resources in other ways than the FHIR Task object as part of the launch, as defined by the HTI:core, we encourage to define a profile. By requiring the encoding of the FHIR task to be JSON, HTI:core is aware of the fact that it is ahead of the decision to make use of the FHIR Rest API and JSON serialization.
+
+#### Mapping of the FHIR task
+Conceptually, the FHIR task is mapped to the domain concepts as follows:
+
+| FHIR Field | Mapping |
+| ------------- | ------------- |
+| id  | A reference to the instance of the task.  |
+| activity definition  | A reference to the definition of the task  |
+| for  | A reference to the type and persistent pseudo identifier of the user.  |
+
+The table below contains an exclusive list of fields, no additional fields from the STU3 FHIR specification are allowed in the HTI:core standard. If you intend to use any additional fields from the STU3 FHIR standard, you MUST specify a HTI profile to do so.
+
+| FHIR task field | Required | Value |
+| ------------- | ------------- | ------------- |
+| resourceType | yes | This field should always be populated with the value "Task". |
+| id  | yes  | The identifier of the task. More details are described in the [Task id](#the-task-id) section. |
+| definitionReference.reference | no | A reference to the task definition. More details are described in the [task definition] section. |
+| for | yes | A reference to the user responsible for the task. More details are described in the [person reference] section. |
+| intent | yes | This field must be populated with a value from the FHIR value set RequestIntent, if not applicable, use "plan". |
+| status | yes | Status of the task. This field must be populated with one of the values defined by the [FHIR value set TaskStatus](https://www.hl7.org/fhir/STU3/valueset-request-intent.html). |
+
+An example of the resulting FHIR task object:
+
+```json
+{
+    "resourceType": "Task",
+    "id": "a5e57fd0",
+    "definitionReference": {
+      "reference": "ActivityDefinition/a5e58200"
+    },
+    "for": {
+      "reference": "Person/a5e5844e"
+    },
+    "intent": "plan",
+    "status": "requested"
+}
+```
+
+##### The task id
+The task id is a reference to the instance of the task. In relation to the task definition, the task id changes when a user does the same task in a different context or for the second time. The task definition does not. The task id MUST be persistent over the timeframe the task instance is active. The task identifier is an identifier and not a reference, it does not need the resource type to be prepended.
+
+##### The task definition
+The reference to the task definition is a reference to the type of task that should be performed. What a task definition means, depends on the context. The reference refers to the type of task. In the case of e-health, the task definition could refer to a e-health treatment. For example, the "Fearfighter" module that offers help to people with phobia, anxiety disorder, or panic disorder. As the reference to the task definition, the reference type MUST be ‘ActivityDefinition’, as a result of this, the reference must  have the format:
+```
+ActivityDefinition/<Identifier>
+```
+The task definition is not a required field. However we discourage the omittance of the field, there are scenarios we want to support that do not require a task definition to be present in the launch.
+
 
 <IMG 7>
 
