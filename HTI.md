@@ -109,6 +109,65 @@ The user **MUST** be informed in a short and straightforward message, that **MUS
 primary language SHOULD be used.  It MUST be clear to the user what is asked and for what purpose.
 Please note that the notion of a domain does not imply that consent can be shared between module providers and portals with domain level consent. 
 
+#### Profiles
+The HTI:core standard defines the core part of the standard, consisting of the module launch. The HTI:core standard MAY be extended with profiles. These profiles MAY do the following:
+ * ***Extend*** the specification by adding or modifying fields to the existing data model.
+ * ***Replace*** specific parts of the standard, such as the way information is exchanged between systems.
+ * ***Define*** additional functions, such as the exchange of information outside the scope of the launch.
+A HTI profile MUST be documented properly and be the profile MUST clear about the relationship between HTI:core and the profile. The profile MUST identify themselves with a namespaced identifier, starting with “HTI:”, for example: HTI:smart_on_fhir. The HTI core standard is identified by HTI:core. It is encouraged to create profiles as specific as possible, and create multiple profiles if necessary.
+
+#### To summarize:
+ * The launch message must not contain personal data.
+ * The module system may identify the user by its own means.
+ * All involved must have explicit users’ consent if personal data is disclosed to other parties.
+ * The standard may be extended with profiles, the core specification is defined as HTI:core.
+ 
+ ## Implementation guide
+The HTI:core standard defines the exchange of a message from the portal to the module. This exchange consists of the following parts:
+ * ① The contents of the message: the FHIR task object.
+ * ② The serialization of the message into the JWT message format.
+ * ③ The exchange of the message, how it is exchanged between the portal and the module.
 
 <IMG 5>
+
+### Semantic roles and responsibilities
+As the HTI:core specification exists of three parts, these parts each have different roles and responsibilities. These are:
+ * The ① FHIR task object MUST only contain information about the functional task, the definition of the task, and the people involved. 
+ * The ② JWT message MUST only contain information about the sending system, the recipient system and the message itself.
+ * The ③ exchange of the message MUST NOT contain any information that falls in the categories defined by ① and ②. For example, it is not allowed to refer to a treatment by encoding one in the launch URL.
+The diagram below summarizes these concepts.
+
 <IMG 6>
+
+### ① The FHIR task object
+The message consists of a FHIR Task resource. This resource is part of the FHIR STU3 standard and documented [here](https://www.hl7.org/fhir/STU3/task.html). Please note that the STU3 MUST be used, not the latest version.
+
+#### Identifiers and references
+By the FHIR standard, each object has a type (resourceType) and identifier (id). When an object is serialized, the id and type are required fields, the diagram below show an example, the resource type and identifier are displayed in the next example:
+
+```json
+{
+    "resourceType": "Task",
+    "id": "a5e57fd0"
+}
+```
+A reference to an object consists of a combination of type and identifier. References to objects in the FHIR standard are notated as follows:
+```
+resourceType/id
+```
+In the example below, show an example of such a reference as `ActivityDefinition/a5e58200`:
+```json
+{
+    "resourceType": "Task",
+    "id": "a5e57fd0",
+    "definitionReference": {
+      "reference": "ActivityDefinition/a5e58200"
+    }
+  }
+```
+
+<IMG 7>
+
+<IMG 8>
+
+<IMG 9>
