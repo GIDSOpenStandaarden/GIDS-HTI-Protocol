@@ -52,7 +52,7 @@ The health tool interoperability standard (HTI) connects portals with modules li
 the concept of launch that entails both a transition from the portal to the module and a start of a new session on the module’s side. The HTI:core standard defines the 
 communication protocol. the message format and the message exchange that is required to start a module from a portal in a domain. 
 
-<IMG 1>
+![](images/HTI%20Architecture.png)
 
 ### Concepts
  * Portal, the service that links to the module, that is, an application like a tool, a game, or a treatment.
@@ -66,7 +66,7 @@ The launch message consists of a task object. The task object consists of the fo
  * A reference to the definition of the task.
 Schematically, the relationship between the entities is displayed below:
 
-<IMG 2>
+![](images/Domain%20model.png)
 
 ### Assumptions
 There are a number of assumptions on which the HTI:core standard is based. These assumptions are of relevance to the implementation of the standard as they function both as 
@@ -78,25 +78,27 @@ be traceable to the real user. The user MUST be identified by a persistent pseud
 identifiers for a user in each domain. The message MUST NOT contain any other identifier like a name, email account or social identification number. The persistent pseudo 
 identifier MUST be randomly chosen and MUST contain enough entropy to block brute-force attacks.
 
-<IMG 3>
+![](images/Persistent%20pseudo%20identifiers.png)
 
 #### Self-managed identities
 As a consequence of the fact that no personal data may be exchanged by the launch, the module provider MAY query the user for information it needs. This data MAY be linked to the 
 persistent pseudo identifier, so the user does not have to provide the same information again. This way the user controls what information it provides to the module provider on 
 module launch.
 
-<IMG 4>
-<IMG 5>
-<IMG 6>
+![](images/SSI%20example%201.png)
+
+![](images/SSI%20example%202.png)
+
+![](images/SSI%20example%203.png)
 
 #### Domains and scope of the persistent user identifier
 The user identifier **MUST** be unique in each domain, and **MUST NOT** be shared between domains. If the relations between portal and module are between the same two legal 
 entities **and** if there is a clear need to link the users identities between those relations **then** the portal **MAY** use one domain for multiple relations of the same user. 
 Otherwise each relation **MUST** have each own domain. 
 
-<IMG 7>
+![](images/Domain%20scope.png)
 
-#### User consent
+#### User consent 
 The HTI:core specification specifically prohibits the exchange of personal data, however specific profiles that extend the HTI:core standard are allowed to exchange personal data. 
 Thereby the HTI:core standard states that, If one of the systems in the domain transfers information from one system to another system in the domain, the user **MUST** provide 
 consent. When asking consent ,the user **MUST** be informed about all of the following:
@@ -128,7 +130,7 @@ The HTI:core standard defines the exchange of a message from the portal to the m
  * ② The serialization of the message into the JWT message format.
  * ③ The exchange of the message, how it is exchanged between the portal and the module.
 
-<IMG 5>
+![](images/Implemention%20steps.png)
 
 ### Semantic roles and responsibilities
 As the HTI:core specification exists of three parts, these parts each have different roles and responsibilities. These are:
@@ -137,7 +139,7 @@ As the HTI:core specification exists of three parts, these parts each have diffe
  * The ③ exchange of the message MUST NOT contain any information that falls in the categories defined by ① and ②. For example, it is not allowed to refer to a treatment by encoding one in the launch URL.
 The diagram below summarizes these concepts.
 
-<IMG 6>
+![](images/Semantic%20roles.png)
 
 ### ① The FHIR task object
 The message consists of a FHIR Task resource. This resource is part of the FHIR STU3 standard and documented [here](https://www.hl7.org/fhir/STU3/task.html). Please note that the STU3 MUST be used, not the latest version.
@@ -216,9 +218,113 @@ ActivityDefinition/<Identifier>
 ```
 The task definition is not a required field. However we discourage the omittance of the field, there are scenarios we want to support that do not require a task definition to be present in the launch.
 
+##### Person reference
+When referring to persons in the FHIR task object, please keep in mind that FHIR does allow personal details such as e-mail addresses and displayname as part of the FHIR standard, however the HTI:core standard explicitly forbids the personal data to be exchanged by the launch. The user MUST be identified by a persistent pseudo identifier.
+The `for` field SHOULD be used for the person for who is actively participating in the launch and is responsible for performing the task. The `for` field is a reference that consists of both resource type and identifier. This implies that the format MUST be:
+```
+<ResourceType>/<Identifier>
+```
+The resource type MUST be a FHIR resource type, the FHIR task object does not limit the for field reference to a specific subset of FHIR resource types, so the resource type MAY be any of, and not limited to, the following types:
+ * Patient
+ * Practitioner
+ * RelatedPerson
+ * Person
+We advise to use the Person type if unsure about the resource type of the `for` field.
 
-<IMG 7>
+Please note that the [3rd party launches](#3rd-party-launches) profile supports launches to tasks that are owned by other persons than the person referred to by the `for` field by making use of the owner field.
 
-<IMG 8>
+#### Configuration and storage requirements
+The portal has the following storage and/or configuration requirements:
+ * The activity definition (s) of the module (s) need to be configured, having an agreed upon identifier, and optionally the name, image and description. To do so, the FHIR ActivityDefinition object MAY be used.
+ * The task id from the FHIR object MUST represent a specific instance of an activity definition performed by a user and MUST be persistent over the timeframe the task instance is active.
+ * The user identifier (for field) MUST be both unique and persistent in each domain.
 
-<IMG 9>
+The module provider has the following storage and/or configuration requirements.
+ * The activity definition should be agreed upon with the portal application.
+ * Any additional information about the user attached to the persistent pseudo identifier, as the FHIR task that is exchanged at the launch is not to contain any personal data.
+
+### ② The message format
+The FHIR task object MUST be exchanged as part of a JWT token. The FHIR task object MUST be serialized as JSON and included in the nested field "task". The mapping of the JWT fields is as follows.
+
+| Description | Field | Value |
+| ------------- | ------------- | ------------- |
+| Issuer | iss | This field MUST be a reference to the portal application that creates the JWT token. It MAY consist of an url or domain name of the portal application. The portal application and module provider MUST agree on the value of the iss field. The module provider MUST validate the message with the public key associated with the iss reference. The portal application MAY disseminate its public keys by the JKWS protocol, in that case the JWT token MUST contain a kid field in the JWT header. |
+| Audience | aud | This field MUST be a reference to the module provider for which the JWT token is created for. The reference MAY consist of an url or domain name of the module provider. The portal application and module provider MUST agree on the value of the aud field. The module provider MUST validate the aud field to have the expected value. |
+| Unique message id | jti | A unique identifier for this message. This value MUST be treated as a NONCE, a subsequent message with an identical jti MUST be rejected. The jti value must be a random or pseudo number, the jti MUST contain enough entropy to block brute-force attacks. |
+| Issue time | iat | The timestamp of generating the JWT token, the value of this field MUST be validated by the module provider to not be in the future. |
+| Expiration time | exp | This value MUST be the time-out of the exchange sending it to the client plus the time-out of the exchange used by the client to send it, the value MUST be limited to 5 minutes. This value MUST be validated by the module provider, any value that exceeds the timeout MUST be rejected. |
+| Task | task | The FHIR Task object in JSON format. |
+
+#### Example message
+```json
+{
+  "task": {
+    "resourceType": "Task",
+    "id": "11",
+    "definitionReference": {
+      "reference": "ActivityDefinition/8"
+    },
+    "status": "requested",
+    "intent": "plan",
+    "for": {
+      "reference": "Patient/9"
+    }
+  },
+  "iat": 1585564845,
+  "aud": "https://module.example.com",
+  "iss": "https://portal.example.com",
+  "exp": 1585565745,
+  "jti": "679e1e4c-bcb9-4fcc-80c4-f36e7063545c"
+}
+```
+
+#### Message layout
+The JWT standard is documented at [jwt.io](https://jwt.io), we refer to the JWT documentation on how to create a JWT token. The figure below displays the JWT token from a conceptual level.
+
+![](images/JWT%20message%20structure.png)
+
+#### Additional security restrictions
+ * The JWT MUST use an asymmetric public / private key to sign the JWT tokens. The public key MUST be made available to the module provider, the private key MUST remain private on the portal infrastructure. As stated before, the public key MAY be disseminated by the JWKS protocol. The use of shared secrets is not allowed, because the issuer of the JWT cannot guarantee ownership as the key is shared.
+   * The signing MUST make use of an asymmetric algorithm, so all HMAC based algorithms,  algorithms starting with HS, are not allowed).
+   * The portal MAY use any of the asymmetric algorithms, the module MUST support at least the following:
+     * RS256, RS384, and RS512
+     * ES256, ES384, and ES512
+ * The JWT token MUST on both the platform as on the module provider side be exchanged over an encrypted connection.
+
+#### Configuration and storage requirements
+ * The portal needs to configure the following.
+ * The private key for message signing, the public key must be shared with the module provider.
+The module provider needs to configure the following
+ * The public key of the portal associated with the iss field value for message validation.
+ * The jti MUST be validated and stored for replay detection.
+
+![](images/JWT%20signing%20keys.png)
+
+### ③ The message exchange
+By the HTI:core specification, the message MUST be posted to the module application as part of a form encoded POST request (application/x-www-form-urlencoded). The token MUST be placed in the “token” field. Additional HTI profiles MAY define alternative means of exchanging the JWT token. The portal SHOULD use the form-post-redirect pattern to exchange the token via the client’s browser. This pattern works by rendering a form on the client's browser that contains the token as a hidden field. This form is submitted by javascript. This exchange MUST be done over the https protocol only.  
+
+Example code
+
+```html
+<html>
+<head>
+</head>
+<body onload="document.forms[0].submit();">
+<form action="https://module.provider.eu/modules/x" method="post">
+<input type="hidden" name="token" value="eyJhbGciO..."/>
+</form>
+</body>
+</html>
+```
+
+#### Validation and error conditions
+The module provider MUST validate the JWT message according to the rules defined by  ① The FHIR task object and ② The Message format. The form-post-redirect exchange does not allow for any feedback to the portal application. In case the JWT message is invalid, the user MUST be presented with a human understandable error message, the module provider MAY provide technical details, but MUST  be moderate in providing technical details that expose the implementation of the validation system. Besides presenting a human readable error message to the user, the portal application MAY use an http status code in the 400 range (Client error responses). The portal application SHOULD implement a logging facility that makes the validation errors insightful to the application maintainers, and MAY provide the human readable error messages on the screen with an error message code that corresponds to the log message in the application logging facility.
+#### Launch configuration requirements
+The portal needs to configure the following.
+ * The endpoint URL of the module from the module provider.
+
+### Putting it all together
+The diagram below displays an overview of all the steps of the HTI launch.
+
+![](images/HTI%20interaction%20diagram.png)
+
