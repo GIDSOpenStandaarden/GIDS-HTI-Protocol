@@ -3,7 +3,6 @@ HTI:core version 0.3
 
 Document version: 0.3  
 Date: 22-6-2020  
-Author(s): roland@headease.nl  
 
 ## Goals and Rationale
 The GIDS Health Tool Interoperability protocol (HTI) is inspired by the IMS - Learning Tool Interoperability (LTI) which has had a tremendous proven impact on the relation 
