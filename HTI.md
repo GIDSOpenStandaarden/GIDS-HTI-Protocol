@@ -119,7 +119,7 @@ The HTI:core standard defines the exchange of a message from the portal to the m
  * ② The serialization of the message into the **JWT message format**.
  * ③ The **exchange** of the message, how it is exchanged between the portal and the module.
 
-![](images/Implemention%20steps.png)
+![](images/Implementationsteps.png)
 
 ### Semantic roles and responsibilities
 As the HTI:core specification exists of three parts, these parts each have different roles and responsibilities. These are:
@@ -294,7 +294,7 @@ The module provider needs to configure the following
 * The jti **MUST** be validated and stored for replay detection.
 
 
-![](images/JWT%20signing%20keys.png)
+![](images/JWTsigningkeysV2.png)
 
 ### ③ The message exchange
 By the HTI:core specification, the message **MUST** be posted to the module application as part of a form encoded POST request (application/x-www-form-urlencoded). The token **MUST** be placed in the “token” field. Additional HTI profiles **MAY** define alternative means of exchanging the JWT token. The portal **SHOULD** use the form-post-redirect pattern to exchange the token via the client’s browser. This pattern works by rendering a form on the client's browser that contains the token as a hidden field. This form is submitted by javascript. This exchange **MUST** be done over the https protocol only.  
@@ -325,7 +325,7 @@ The portal needs to configure the following.
 ### Putting it all together
 The diagram below displays an overview of all the steps of the HTI launch.
 
-![](images/HTI%20interaction%20diagram.png)
+![](images/HTIinteractiondiagramv2.png)
 
 ## Profiles
 
@@ -349,6 +349,8 @@ The additional requirement for using a JWE message is as follows:
 ### Layout of the message
 For details of the JWE standard, we refer to the JWE documentation. The diagram below displays the JWT and JWE token from a conceptual perspective
 
+![](images/JWE&JWTtoken.png)
+
 ### Tip: JWT and JWE message detection
 If you, as a module provider, wish to support both JWE and JWT tokens, it is possible to detect id the token is a JWT or JWE token by counting the number of dots in the token. The following rules apply.
 * If the token contains two dots (.), the token is a JWT token.
@@ -361,6 +363,7 @@ The portal needs to configure the following:
 The module provider needs to configure the following
 * The private key for message decryption, referred to by the kid in the message header. The public key of the keypair should be communicated with the module provider for encryption.
 
+![](images/Configuration&storagerequirements.png)
 
 ### 3rd party launches (HTI:3rdparty)
 The 3rd party launch is an extension of the HTI launch message, where the FHIR task object makes use of an additional owner field to denote a launch done by a different person of the launch owner.
@@ -467,3 +470,5 @@ By clicking the Information icon, information regarding the field will be displa
 In order to develop a module, there is a testsuite available. This suite consists of three parts: the FHIR object, the JWT message and the exchange. 
 The FHIR task
 The FHIR part sets the values in the FHIR task object. The testsuite generates the ID values automatically, and stores the generated values in a cookie in the browser. These values are stored in the browser until the reset button is clicked. If the reset button is clicked, the form is populated with a new set of generated values.
+
+![](images/gidshtitestportal.png)
