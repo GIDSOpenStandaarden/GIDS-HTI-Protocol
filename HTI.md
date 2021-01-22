@@ -212,19 +212,19 @@ The task definition is not a required field. However we discourage the omittance
 
 ##### Person reference
 When referring to persons in the FHIR task object, please keep in mind that FHIR does allow personal details such as e-mail addresses and displayname as part of the FHIR standard, however the HTI:core standard explicitly forbids the personal data to be exchanged by the launch. The user **MUST** be identified by a persistent pseudo identifier.
-The for field **SHOULD** be used for the person for who is actively participating in the launch and is responsible for performing the task. The for field is a reference that consists of both resource type and identifier. This implies that the format **MUST** be:
+The `for` field **SHOULD** be used for the person for who is actively participating in the launch and is responsible for performing the task. The `for` field is a reference that consists of both resource type and identifier. This implies that the format **MUST** be:
 ```
 <ResourceType>/<Identifier>
 ```
-The resource type **MUST** be a FHIR resource type, the FHIR task object does not limit the for field reference to a specific subset of FHIR resource types, so the resource type **MAY** be any of, and not limited to, the following types:
+The resource type **MUST** be a FHIR resource type, the FHIR task object does not limit the `for` field reference to a specific subset of FHIR resource types, so the resource type **MAY** be any of, and not limited to, the following types:
  * Patient
  * Practitioner
  * RelatedPerson
  * Person
 
-We advise to use the Person type if unsure about the resource type of the for field.
+We advise to use the Person type if unsure about the resource type of the `for` field.
 
-Please note that the [3rd party launches](#3rd-party-launches) profile supports launches to tasks that are owned by other persons than the person referred to by the `for` field by making use of the owner field.
+Please note that the [3rd party launches](#3rd-party-launches) profile supports launches to tasks that are owned by other persons than the person referred to by the `for` field by making use of the `owner` field.
 
 #### Configuration and storage requirements
 The portal has the following storage and/or configuration requirements:
@@ -366,7 +366,7 @@ The module provider needs to configure the following
 ![](images/Configuration&storagerequirements.png)
 
 ### 3rd party launches (HTI:3rdparty)
-The 3rd party launch is an extension of the HTI launch message, where the FHIR task object makes use of an additional owner field to denote a launch done by a different person of the launch owner.
+The 3rd party launch is an extension of the HTI launch message, where the FHIR task object makes use of an additional `owner` field to denote a launch done by a different person of the launch owner.
 
 ### Mapping of the FHIR task
 
@@ -377,8 +377,8 @@ The 3rd party launch is an extension of the HTI launch message, where the FHIR t
 * Practitioner
 * RelatedPerson|
  
-The for field should be used for the person who is actively participating in the launch. The for fields allows a reference to any FHIR object, depending on the context we advise to use the Patient, Practitioner, and RelatedPerson type, or the Person type if none of these is applicable.
-The owner field should be used in use cases where the person actively participating in the launch is not the owner of the task. Think of a related person or caregiver that launches a task of someone else.
+The `for` field should be used for the person who is actively participating in the launch. The for fields allows a reference to any FHIR object, depending on the context we advise to use the Patient, Practitioner, and RelatedPerson type, or the Person type if none of these is applicable.
+The `owner` field should be used in use cases where the person actively participating in the launch is not the owner of the task. Think of a related person or caregiver that launches a task of someone else.
 
 ### Scenario’s
 The table below displays the use of the for and owner fields in different scenarios.
@@ -397,9 +397,9 @@ This section provides an overview of the requirements and responsibilities in Mo
 | ------------- | 
 | The FHIR task object MUST only contain information about the functional task, the definition of the task, and the people involved. |
 | The  JWT message MUST only contain information about the sending system, the recipient system and the message itself. |
-| The  exchange of the message MUST NOT contain any information about:
-the functional task, the definition of the task, and the people involved, and
-information about the sending system, the recipient system and the message itself. |
+| The  exchange of the message MUST NOT contain any information about: |
+| * the functional task, the definition of the task, and the people involved, and |
+| * information about the sending system, the recipient system and the message itself. |
 | The FHIR task object MUST use the STU3 version. |
 | The JSON serialization MUST be used for FHIR task objects. |
 | The fields used in the FHIR task object MUST match the table FHIR field mapping. |
