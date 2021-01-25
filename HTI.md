@@ -47,7 +47,7 @@ section Implementation checklist. We have tried to make use of illustrations to 
 ## Architecture
 The health tool interoperability standard (HTI) connects portals with modules like e-health treatments, (serious)games of any other type of functionality. This standard defines the concept of launch that entails both a transition from the portal to the module and a start of a new session on the module’s side. The HTI:core standard defines the communication protocol. the message format and the message exchange that is required to start a module from a portal in a domain. 
 
-![](images/HTI%20Architecture.png)
+![](images/image4.png)
 
 ### Concepts
 * Portal, the service that links to the module, that is, an application like a tool, a game, or a treatment.
@@ -62,7 +62,7 @@ The launch message consists of a task object. The task object consists of the fo
 Schematically, the relationship between the entities is displayed below:
 
 
-![](images/Domain%20model.png)
+![](images/image15.png)
 
 ### Assumptions
 There are a number of assumptions on which the HTI:core standard is based. These assumptions are of relevance to the implementation of the standard as they function both as the starting point and as guidance to the (technical) decisions made in the realization of this standard.
@@ -70,22 +70,22 @@ There are a number of assumptions on which the HTI:core standard is based. These
 #### Personal data
 First and foremost, the message must not contain any personal information. The message does contain a reference to the user and the task at hand, but this reference must never be traceable to the real user. The user **MUST** be identified by a persistent pseudo identifier. The identifier **MUST** be unique in the domain. The portal **MUST** use a different identifiers for a user in each domain. The message **MUST NOT** contain any other identifier like a name, email account or social identification number. The persistent pseudo identifier **MUST** be randomly chosen and **MUST** contain enough entropy to block brute-force attacks.
 
-![](images/Persistent%20pseudo%20identifiers.png)
+![](images/image17.png)
 
 #### Self-managed identities
 As a consequence of the fact that no personal data may be exchanged by the launch, the module provider **MAY** query the user for information it needs. This data **MAY** be linked to the persistent pseudo identifier, so the user does not have to provide the same information again. This way the user controls what information it provides to the module provider on module launch.
 
-![](images/SSI%20example%201.png)
+![](images/image16.png)
 
-![](images/SSI%20example%202.png)
+![](images/image5.png)
 
-![](images/SSI%20example%203.png)
+![](images/image13.png)
 
 #### Domains and scope of the persistent user identifier
 The user identifier **MUST** be unique in each domain, and **MUST NOT** be shared between domains. If the relations between portal and module are between the same two legal entities **and** if there is a clear need to link the users identities between those relations **then** the portal **MAY** use one domain for multiple relations of the same user. **Otherwise** each relation **MUST** have each own domain. 
 
 
-![](images/Domain%20scope.png)
+![](images/image9.png)
 
 #### User consent 
 The HTI:core specification specifically prohibits the exchange of personal data, however specific profiles that extend the HTI:core standard are allowed to exchange personal data. Thereby the HTI:core standard states that, If one of the systems in the domain transfers information from one system to another system in the domain, the user **MUST** provide consent. When asking consent ,the user **MUST** be informed about all of the following:
@@ -119,7 +119,7 @@ The HTI:core standard defines the exchange of a message from the portal to the m
  * ② The serialization of the message into the **JWT message format**.
  * ③ The **exchange** of the message, how it is exchanged between the portal and the module.
 
-![](images/Implementationsteps.png)
+![](images/image2.png)
 
 ### Semantic roles and responsibilities
 As the HTI:core specification exists of three parts, these parts each have different roles and responsibilities. These are:
@@ -128,7 +128,7 @@ As the HTI:core specification exists of three parts, these parts each have diffe
  * The ③ exchange of the message **MUST NOT** contain any information that falls in the categories defined by ① and ②. For example, it is not allowed to refer to a treatment by encoding one in the launch URL.
 The diagram below summarizes these concepts.
 
-![](images/Semantic%20roles.png)
+![](images/image12.png)
 
 ### ① The FHIR task object
 The message consists of a FHIR Task resource. This resource is part of the FHIR STU3 standard and documented [here](https://www.hl7.org/fhir/STU3/task.html). Please note that the STU3 MUST be used, not the latest version.
@@ -275,7 +275,7 @@ The code fragment below shows the FHIR task (in gray) as part of the JWT message
 #### Message layout
 The JWT standard is documented at [jwt.io](https://jwt.io), we refer to the JWT documentation on how to create a JWT token. The figure below displays the JWT token from a conceptual level.
 
-![](images/JWT%20message%20structure.png)
+![](images/image11.png)
 
 #### Additional security restrictions
  * The JWT **MUST** use an asymmetric public / private key to sign the JWT tokens. The public key **MUST** be made available to the module provider, the private key **MUST** remain private on the portal infrastructure. As stated before, the public key **MAY** be disseminated by the JWKS protocol. The use of shared secrets is not allowed, because the issuer of the JWT cannot guarantee ownership as the key is shared.
@@ -294,7 +294,7 @@ The module provider needs to configure the following
 * The jti **MUST** be validated and stored for replay detection.
 
 
-![](images/JWTsigningkeysV2.png)
+![](images/image6.png)
 
 ### ③ The message exchange
 By the HTI:core specification, the message **MUST** be posted to the module application as part of a form encoded POST request (application/x-www-form-urlencoded). The token **MUST** be placed in the “token” field. Additional HTI profiles **MAY** define alternative means of exchanging the JWT token. The portal **SHOULD** use the form-post-redirect pattern to exchange the token via the client’s browser. This pattern works by rendering a form on the client's browser that contains the token as a hidden field. This form is submitted by javascript. This exchange **MUST** be done over the https protocol only.  
@@ -325,7 +325,7 @@ The portal needs to configure the following.
 ### Putting it all together
 The diagram below displays an overview of all the steps of the HTI launch.
 
-![](images/HTIinteractiondiagramv2.png)
+![](images/image10.png)
 
 ## Profiles
 
@@ -349,7 +349,7 @@ The additional requirement for using a JWE message is as follows:
 ### Layout of the message
 For details of the JWE standard, we refer to the JWE documentation. The diagram below displays the JWT and JWE token from a conceptual perspective
 
-![](images/JWE&JWTtoken.png)
+![](images/image7.png)
 
 ### Tip: JWT and JWE message detection
 If you, as a module provider, wish to support both JWE and JWT tokens, it is possible to detect id the token is a JWT or JWE token by counting the number of dots in the token. The following rules apply.
@@ -363,7 +363,7 @@ The portal needs to configure the following:
 The module provider needs to configure the following
 * The private key for message decryption, referred to by the kid in the message header. The public key of the keypair should be communicated with the module provider for encryption.
 
-![](images/Configuration&storagerequirements.png)
+![](images/image3.png)
 
 ### 3rd party launches (HTI:3rdparty)
 The 3rd party launch is an extension of the HTI launch message, where the FHIR task object makes use of an additional `owner` field to denote a launch done by a different person of the launch owner.
@@ -471,4 +471,4 @@ In order to develop a module, there is a testsuite available. This suite consist
 The FHIR task
 The FHIR part sets the values in the FHIR task object. The testsuite generates the ID values automatically, and stores the generated values in a cookie in the browser. These values are stored in the browser until the reset button is clicked. If the reset button is clicked, the form is populated with a new set of generated values.
 
-![](images/gidshtitestportal.png)
+![](images/image14.png)
