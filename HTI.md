@@ -1,8 +1,8 @@
 # GIDS Health Tools Interoperability 
-HTI:core version 0.4
+HTI:core version 1.0
 
-Document version: 0.4  
-Date: 20-1-2021  
+Document version: 1.0  
+Date: 26-4-2021
 
 ## Goals and Rationale
 The GIDS Health Tool Interoperability protocol (HTI) is inspired by the IMS - Learning Tool Interoperability (LTI) which has had a tremendous proven impact on the relation between learner management systems and learning tool providers. The objectives of LTI are: 
@@ -95,7 +95,7 @@ The HTI:core specification specifically prohibits the exchange of personal data,
 * For what period the data will be shared.
 * For what purpose the data will be shared.
 
-The user **MUST** be informed in a short and straightforward message, that **MUST** be in understandable language of maximum B1 level of the [CEFR framework] (https://en.wikipedia.org/wiki/Common_European_Framework_of_Reference_for_Languages). Preferably the users’ primary language **SHOULD** be used.  It **MUST** be clear to the user what is asked and for what purpose.
+The user **MUST** be informed in a short and straightforward message, that **MUST** be in understandable language of maximum B1 level of the [CEFR framework](https://en.wikipedia.org/wiki/Common_European_Framework_of_Reference_for_Languages). Preferably the users’ primary language **SHOULD** be used.  It **MUST** be clear to the user what is asked and for what purpose.
 Please note that the notion of a domain does not imply that consent can be shared between module providers and portals with domain level consent. 
 
 
@@ -131,7 +131,7 @@ The diagram below summarizes these concepts.
 ![](images/image12.png)
 
 ### ① The FHIR task object
-The message consists of a FHIR Task resource. This resource is part of the FHIR STU3 standard and documented [here](https://www.hl7.org/fhir/STU3/task.html). Please note that the STU3 MUST be used, not the latest version.
+The message consists of a FHIR Task resource. This resource is part of the FHIR standard and documented [here](https://www.hl7.org/fhir/R4/task.html). Please note that the FHIR version MUST be provided when not using the latest stable version.
 
 #### Identifiers and references
 By the FHIR standard, each object has a type (resourceType) and identifier (id). When an object is serialized, the id and type are required fields, the diagram below shows an example:
@@ -151,9 +151,7 @@ In the diagram below, an example of such a reference:
 {
     "resourceType": "Task",
     "id": "a5e57fd0",
-    "definitionReference": {
-      "reference": "ActivityDefinition/a5e58200"
-    }
+    "instantiatesCanonical": "https://example.org/ActivityDefinition/a5e58200"
   }
 ```
 The HTI:core standard defines that the reference format **MUST** align with the FHIR reference format.
@@ -167,10 +165,10 @@ Conceptually, the FHIR task is mapped to the domain concepts as follows:
 | FHIR Field | Mapping |
 | ------------- | ------------- |
 | id  | A reference to the instance of the task.  |
-| activity definition  | A reference to the definition of the task  |
+| instantiatesCanonical  | A URL pointing to the definition of the task  |
 | for  | A reference to the type and persistent pseudo identifier of the user.  |
 
-The table below contains an exclusive list of fields, no additional fields from the STU3 FHIR specification are allowed in the HTI:core standard. If you intend to use any additional fields from the STU3 FHIR standard, you **MUST** specify a HTI profile to do so.
+The table below contains an exclusive list of fields, no additional fields from the FHIR specification are allowed in the HTI:core standard. If you intend to use any additional fields from the FHIR standard, you **MUST** specify a HTI profile to do so.
 
 
 
@@ -178,10 +176,10 @@ The table below contains an exclusive list of fields, no additional fields from 
 | ------------- | ------------- | ------------- |
 | resourceType | yes | This field should always be populated with the value "Task". |
 | id  | yes  | The identifier of the task. More details are described in the [Task id](#the-task-id) section. |
-| definitionReference.reference | no | A reference to the task definition. More details are described in the [task definition] section. |
-| for | yes | A reference to the user responsible for the task. More details are described in the [person reference] section. |
-| intent | yes | This field must be populated with a value from the [FHIR value set RequestIntent](https://www.hl7.org/fhir/STU3/valueset-request-intent.html), if not applicable, use "plan". |
-| status | yes | Status of the task. This field must be populated with one of the values defined by the [FHIR value set TaskStatus](https://www.hl7.org/fhir/STU3/valueset-request-intent.html). |
+| instantiatesCanonical | no | A [canonical](http://hl7.org/fhir/R4/references.html#canonical) URL that references the FHIR definition. More details are described in the [activity definition](https://www.hl7.org/fhir/activitydefinition.html) documentation. |
+| for | yes | A reference to the user responsible for the task. More details are described in the [person reference](#person-reference) section. |
+| intent | yes | This field must be populated with a value from the [FHIR value set RequestIntent](https://www.hl7.org/fhir/R4/valueset-request-intent.html), if not applicable, use "plan". |
+| status | yes | Status of the task. This field must be populated with one of the values defined by the [FHIR value set TaskStatus](https://www.hl7.org/fhir/R4/valueset-task-status.html). |
 
 An example of the resulting FHIR task object:
 
@@ -189,9 +187,7 @@ An example of the resulting FHIR task object:
 {
     "resourceType": "Task",
     "id": "a5e57fd0",
-    "definitionReference": {
-      "reference": "ActivityDefinition/a5e58200"
-    },
+    "instantiatesCanonical": "https://example.org/ActivityDefinition/a5e58200",
     "for": {
       "reference": "Person/a5e5844e"
     },
@@ -203,12 +199,14 @@ An example of the resulting FHIR task object:
 ##### The task id
 The task id is a reference to the instance of the task. In relation to the task definition, the task id changes when a user does the same task in a different context or for the second time. The task definition does not. The task id **MUST** be persistent over the timeframe the task instance is active. The task id is an identifier and not a reference, it does not need the resource type to be prepended.
 
-##### The task definition
-The reference to the task definition is a reference to the type of task that should be performed. What a task definition means, depends on the context. The reference refers to the type of task. In the case of e-health, the task definition could refer to a e-health treatment. For example, the "Fearfighter" module that offers help to people with phobia, anxiety disorder, or panic disorder. As the reference to the task definition, the reference type MUST be ‘ActivityDefinition’, as a result of this, the reference must  have the format:
+##### The definition
+The definition of the Task is described by the `instantiatesCanonical` (`definitionReference.reference` in [STU3](http://hl7.org/fhir/STU3/task-definitions.html#Task.definition_x_)) field. What a definition means, depends on the context. In the case of e-health, the definition could refer to an e-health treatment. For example, the "Fearfighter" module that offers help to people with phobia, anxiety disorder, or panic disorder. The definition **MUST** be a [canonical](http://hl7.org/fhir/R4/references.html#canonical) URL reference pointing to an `ActivityDefinition`. The following format is preferred:
 ```
-ActivityDefinition/<Identifier>
+https://<Domain>/ActivityDefinition/<Identifier>
 ```
-The task definition is not a required field. However we discourage the omittance of the field, there are scenarios we want to support that do not require a task definition to be present in the launch.
+The above format is [preferred](http://hl7.org/fhir/R4/activitydefinition-definitions.html#ActivityDefinition.url) over `urn:uuid:` and `urn:oid:` URIs.
+
+The `instantiatesCanonical` is not a required field. However we discourage the omittance of the field, there are scenarios we want to support that do not require a task definition to be present in the launch.
 
 ##### Person reference
 When referring to persons in the FHIR task object, please keep in mind that FHIR does allow personal details such as e-mail addresses and displayname as part of the FHIR standard, however the HTI:core standard explicitly forbids the personal data to be exchanged by the launch. The user **MUST** be identified by a persistent pseudo identifier.
@@ -247,9 +245,10 @@ The FHIR task object **MUST** be exchanged as part of a JWT token. The FHIR task
 | Issue time | iat | The timestamp of generating the JWT token, the value of this field **MUST** be validated by the module provider to not be in the future. |
 | Expiration time | exp | This value **MUST** be the time-out of the exchange sending it to the client plus the time-out of the exchange used by the client to send it, the value **MUST** be limited to 5 minutes. This value **MUST** be validated by the module provider, any value that exceeds the timeout **MUST** be rejected. |
 | Task | task | The FHIR Task object in JSON format. |
+| FHIR Version | fhir-v | The FHIR version for the provided `Task`. When this field is not provided, the FHIR version **MUST** be the latest stable FHIR release. Consumers should evaluate this field in a case-insensitive manner. Currently, the following fields are allowed: `STU3`, `R4` (current stable release) and `R5`. It is strongly advised to always set this field, even when using the latest stable FHIR version. This prevents HTI breaking after a new FHIR stable release. |  
 
 #### Example message
-The code fragment below shows the FHIR task (in gray) as part of the JWT message payload.
+The code fragment below shows the FHIR task (in gray) as part of the JWT message payload.  The example uses FHIR STU3, which is not the latest stable FHIR release. In this case, the `fhir-v` is mandatory.
 ```json
 {
   "task": {
@@ -264,6 +263,7 @@ The code fragment below shows the FHIR task (in gray) as part of the JWT message
       "reference": "Patient/9"
     }
   },
+  "fhir-v": "STU3",
   "iat": 1585564845,
   "aud": "https://module.example.com",
   "iss": "https://portal.example.com",
@@ -400,7 +400,8 @@ This section provides an overview of the requirements and responsibilities in Mo
 | The  exchange of the message MUST NOT contain any information about: |
 | * the functional task, the definition of the task, and the people involved, and |
 | * information about the sending system, the recipient system and the message itself. |
-| The FHIR task object MUST use the STU3 version. |
+| The FHIR task object MUST at least use the STU3 version. |
+| The FHIR version MUST be set when not using the latest stable  FHIR version. |
 | The JSON serialization MUST be used for FHIR task objects. |
 | The fields used in the FHIR task object MUST match the table FHIR field mapping. |
 | The task id field MUST be persistent over the timeframe the task is active. |
@@ -424,11 +425,10 @@ As the creation of the message is the responsibility of the portal application, 
 | Description | 
 | ------------- | 
 | The module application **MUST** expose the launch URL on a secure connection (https). |
-| The module application **MUST NOT** expose any of the following information in the launch URL:
-the functional task, the definition of the task, and the people involved, and
-information about the sending system, the recipient system and the message itself. |
+| The module application **MUST NOT** expose any of the following information in the launch URL:<ul><li>the functional task, the definition of the task, and<li>the people involved, and information about the sending system, the recipient system and the message itself.</li></ul> |
 | The portal application **MAY** additionally identify the user and link that data to the persistent pseudo identifier of the FHIR object. | 
 | The module **MUST** support at least the following JWT signing algorithms: RS256, RS384, and RS512 and ES256, ES384, and ES512 |
+| The Task **MUST** be deserialized with the provided FHIR version (`fhir-v` claim). If the version is not provided, the latest stable FHIR version will be used. |
 | The JWT message **MUST** be validated on the following |
 | * The audience (aud) **MUST** match the module application. |
 | * The issuer (iss) **MUST** be known to the system. |
@@ -457,13 +457,13 @@ Based on the changes above, the mapping between the fields is as follows:
 | | Task/id | New in HTI |
 | email, given_name, middle_name and family_name | - | Not mapped in HTI |
 | User identity (sub) | Task/for/reference | Should be prepended with Person |
-| Subject (resource_id) | task/definitionReference/reference | Should be prepended with ActivityDefinition/ |
+| Subject (resource_id) | Task/instantiatesCanonical | Should be a canonical reference in HTI |
 | iss, aud, jti iat, and exp | iss, aud, jti iat, and exp | All other fields are mapped the same. |
 
 # Test tools and validators
 ## Introduction
 
-A testsuite for both the development of [the module](https://gids-hti-module.edia-tst.eu/module.html) and [the portal](https://gids-hti-portal.edia-tst.eu/portal.html) applications is available in github. 
+A testsuite for both the development of [the module](https://hti-test-suite.sns.gidsopenstandaarden.org/module.html) and [the portal](https://hti-test-suite.sns.gidsopenstandaarden.org/portal.html) applications is available in github. 
 By clicking the Information icon, information regarding the field will be displayed.
 
 ## The module testsuite
