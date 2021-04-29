@@ -37,6 +37,39 @@ Date: 26-4-2021
   - [Introduction](#introduction)
   - [The module testsuite](#the-module-testsuite)
 
+- [GIDS Health Tools Interoperability](#gids-health-tools-interoperability)
+    - [Goals and Rationale](#goals-and-rationale)
+    - [About this document](#about-this-document)
+    - [Architecture](#architecture)
+        - [Concepts](#concepts)
+        - [Domain model](#domain-model)
+        - [Assumptions](#assumptions)
+    - [Implementation guide](#implementation-guide)
+        - [Semantic roles and responsibilities](#semantic-roles-and-responsibilities)
+        - [① The FHIR task object](#-the-fhir-task-object)
+        - [② The message format](#-the-message-format)
+        - [③ The message exchange](#-the-message-exchange)
+        - [Putting it all together](#putting-it-all-together)
+    - [Profiles](#profiles)
+        - [FHIR Store profile (HTI:smart_on_fhir)](#fhir-store-profile-htismart_on_fhir)
+        - [JWE message encryption (HTI:jwe)](#jwe-message-encryption-htijwe)
+        - [Restrictions](#restrictions)
+        - [Layout of the message](#layout-of-the-message)
+        - [Tip: JWT and JWE message detection](#tip-jwt-and-jwe-message-detection)
+        - [Configuration and storage requirements](#configuration-and-storage-requirements)
+        - [3rd party launches (HTI:3rdparty)](#3rd-party-launches-hti3rdparty)
+        - [Mapping of the FHIR task](#mapping-of-the-fhir-task)
+        - [Scenario’s](#scenarios)
+- [Implementation checklist](#implementation-checklist)
+    - [The portal application](#the-portal-application)
+    - [The module application](#the-module-application)
+    - [General requirements](#general-requirements)
+- [Connection with the SNS Launch protocol](#connection-with-the-sns-launch-protocol)
+- [Test tools and validators](#test-tools-and-validators)
+    - [Introduction](#introduction)
+    - [The module testsuite](#the-module-testsuite)
+
+
 ## Goals and Rationale
 The GIDS Health Tool Interoperability protocol (HTI) is inspired by the IMS - Learning Tool Interoperability (LTI) which has had a tremendous proven impact on the relation between learner management systems and learning tool providers. The objectives of LTI are:
  1. To provide a mash-up style deployment model which is easy to configure by URL, key and secret.
@@ -279,6 +312,8 @@ The FHIR task object **MUST** be exchanged as part of a JWT token. The FHIR task
 | Task | task | The FHIR Task object in JSON format. |
 | FHIR Version | fhir-version | The FHIR version for the provided `Task`. When this field is not provided, the FHIR version **MUST** be the latest stable FHIR release. Consumers should evaluate this field in a case-insensitive manner. Currently, the following fields are allowed: `STU3`, `R4` and `R5`. It is strongly advised to always set this field, even when using the latest stable FHIR version. This prevents HTI breaking after a new FHIR stable release. |  
 
+The timestamps follows the ["UNIX time"](https://en.wikipedia.org/wiki/Unix_time) convention, being the number of seconds since the epoch.
+
 #### FHIR Version
 The HTI spec doesn't limit itself to a specific version of FHIR. Ideally, the latest Stable FHIR version is used. At least FHIR STU3 should be used. FHIR provides useful documentation to show the bidirectional differences in the Task:
 
@@ -289,8 +324,6 @@ STU3 and R4 only contains a single property required by HTI:
 src.definition : uri as vs -> tgt.instantiatesUri = vs;
 src.definition : Reference as vs -> tgt.instantiatesCanonical = vs;
 ```
-
-The timestamps follows the ["UNIX time"](https://en.wikipedia.org/wiki/Unix_time) convention, being the number of seconds since the epoch.
 
 #### Example message
 The code fragment below shows the FHIR task (in gray) as part of the JWT message payload.  The example uses FHIR STU3, which is not the latest stable FHIR release. In this case, the `fhir-version` is mandatory.
