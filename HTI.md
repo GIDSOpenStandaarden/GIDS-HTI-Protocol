@@ -245,10 +245,10 @@ The FHIR task object **MUST** be exchanged as part of a JWT token. The FHIR task
 | Issue time | iat | The timestamp of generating the JWT token, the value of this field **MUST** be validated by the module provider to not be in the future. |
 | Expiration time | exp | This value **MUST** be the time-out of the exchange sending it to the client plus the time-out of the exchange used by the client to send it, the value **MUST** be limited to 5 minutes. This value **MUST** be validated by the module provider, any value that exceeds the timeout **MUST** be rejected. |
 | Task | task | The FHIR Task object in JSON format. |
-| FHIR Version | fhir-v | The FHIR version for the provided `Task`. When this field is not provided, the FHIR version **MUST** be the latest stable FHIR release. Consumers should evaluate this field in a case-insensitive manner. Currently, the following fields are allowed: `STU3`, `R4` (current stable release) and `R5`. It is strongly advised to always set this field, even when using the latest stable FHIR version. This prevents HTI breaking after a new FHIR stable release. |  
+| FHIR Version | fhir-version | The FHIR version for the provided `Task`. When this field is not provided, the FHIR version **MUST** be the latest stable FHIR release. Consumers should evaluate this field in a case-insensitive manner. Currently, the following fields are allowed: `STU3`, `R4` (current stable release) and `R5`. It is strongly advised to always set this field, even when using the latest stable FHIR version. This prevents HTI breaking after a new FHIR stable release. |  
 
 #### Example message
-The code fragment below shows the FHIR task (in gray) as part of the JWT message payload.  The example uses FHIR STU3, which is not the latest stable FHIR release. In this case, the `fhir-v` is mandatory.
+The code fragment below shows the FHIR task (in gray) as part of the JWT message payload.  The example uses FHIR STU3, which is not the latest stable FHIR release. In this case, the `fhir-version` is mandatory.
 ```json
 {
   "task": {
@@ -263,7 +263,7 @@ The code fragment below shows the FHIR task (in gray) as part of the JWT message
       "reference": "Patient/9"
     }
   },
-  "fhir-v": "STU3",
+  "fhir-version": "STU3",
   "iat": 1585564845,
   "aud": "https://module.example.com",
   "iss": "https://portal.example.com",
@@ -428,7 +428,7 @@ As the creation of the message is the responsibility of the portal application, 
 | The module application **MUST NOT** expose any of the following information in the launch URL:<ul><li>the functional task, the definition of the task, and<li>the people involved, and information about the sending system, the recipient system and the message itself.</li></ul> |
 | The portal application **MAY** additionally identify the user and link that data to the persistent pseudo identifier of the FHIR object. | 
 | The module **MUST** support at least the following JWT signing algorithms: RS256, RS384, and RS512 and ES256, ES384, and ES512 |
-| The Task **MUST** be deserialized with the provided FHIR version (`fhir-v` claim). If the version is not provided, the latest stable FHIR version will be used. |
+| The Task **MUST** be deserialized with the provided FHIR version (`fhir-version` claim). If the version is not provided, the latest stable FHIR version will be used. |
 | The JWT message **MUST** be validated on the following |
 | * The audience (aud) **MUST** match the module application. |
 | * The issuer (iss) **MUST** be known to the system. |

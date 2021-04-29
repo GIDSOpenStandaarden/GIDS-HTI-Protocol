@@ -7,7 +7,7 @@ Date: 26-4-2021
 Upgraded from v0.4 to 1.0 as we've introduced a breaking change. These are the changes provided in 1.0:
 
 ### Spec changes
-* The FHIR Task can now be provided with a specific FHIR version by providing the `fhir-v` attribute;
+* The FHIR Task can now be provided with a specific FHIR version by providing the `fhir-version` attribute;
 * The default version of the FHIR Task is now R4 instead of STU3 (breaking change);
 * Changed documentation to point to FHIR R4 documentation instead of STU3;
 * Changed STU3 code samples with R4 code samples;
