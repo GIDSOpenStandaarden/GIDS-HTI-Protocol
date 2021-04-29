@@ -334,13 +334,15 @@ The SMART on FHIR profile is elaborated on the following document:
 [HTI on the SMART App Launch Framework](https://docs.google.com/document/d/1qbe2IMIS_zXKMQZY2mQHBUufIHEwMEHo4ESEDmN8P80/edit?usp=sharing)
 
 ### JWE message encryption (HTI:jwe)
-In addition to the JWT token, it is also possible to wrap the JWT token in a JWE envelope. The advantage of wrapping the JWT message in a JWE is:
-* The contents of the message can no longer be inspected by the end-user and is less sensitive to data leakage.
-* The message can only be unpacked by the receiver, thereby the communication is more secure.
-Disadvantages of the usage of JWE encryption are:
-* More added complexity to the configuration and message creation.
-* More difficulty to debug the contents of the JWT message.
+In addition to the JWT token, it is also possible to wrap the JWT token in a JWE envelope. The advantage of wrapping the JWT message in a JWE are:
+* The contents of the message can no longer be inspected by the end-user.
+* The message can only be unpacked by the receiver
 
+This adds an extra layer of security over the communication, minimizing the risk of data leak even further.
+
+Disadvantages of using JWE encryption are:
+* Added complexity to the configuration and message creation.
+* Increased difficulty to debug the contents of the JWT message.
 
 ### Restrictions
 The additional requirement for using a JWE message is as follows:
