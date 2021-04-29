@@ -1,7 +1,7 @@
 # GIDS Health Tools Interoperability 
 HTI:core version 1.0  
 Document version: 1.0  
-Current FHIR Stable Version: [R4](http://hl7.org/fhir/R4/)  
+Current FHIR Stable Version: [R4](http://hl7.org/fhir/R4/) ([see all versions](http://hl7.org/fhir/directory.html))  
 Date: 26-4-2021
 
 ## Goals and Rationale
@@ -246,6 +246,17 @@ The FHIR task object **MUST** be exchanged as part of a JWT token. The FHIR task
 | Expiration time | exp | This value **MUST** be the time-out of the exchange sending it to the client plus the time-out of the exchange used by the client to send it, the value **MUST** be limited to 5 minutes. This value **MUST** be validated by the module provider, any value that exceeds the timeout **MUST** be rejected. |
 | Task | task | The FHIR Task object in JSON format. |
 | FHIR Version | fhir-version | The FHIR version for the provided `Task`. When this field is not provided, the FHIR version **MUST** be the latest stable FHIR release. Consumers should evaluate this field in a case-insensitive manner. Currently, the following fields are allowed: `STU3`, `R4` and `R5`. It is strongly advised to always set this field, even when using the latest stable FHIR version. This prevents HTI breaking after a new FHIR stable release. |  
+
+#### FHIR Version
+The HTI spec doesn't limit itself to a specific version of FHIR. Ideally, the latest Stable FHIR version is used. At least FHIR STU3 should be used. FHIR provides useful documentation to show the bidirectional differences in the Task:
+
+[STU3 ⇆ R4](http://hl7.org/fhir/R4/task-version-maps.html)
+
+STU3 and R4 only contains a single property required by HTI:
+```
+src.definition : uri as vs -> tgt.instantiatesUri = vs;
+src.definition : Reference as vs -> tgt.instantiatesCanonical = vs;
+```
 
 #### Example message
 The code fragment below shows the FHIR task (in gray) as part of the JWT message payload.  The example uses FHIR STU3, which is not the latest stable FHIR release. In this case, the `fhir-version` is mandatory.
