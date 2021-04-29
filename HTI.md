@@ -280,6 +280,8 @@ The FHIR task object **MUST** be exchanged as part of a JWT token. The FHIR task
 | Expiration time | exp | This value **MUST** be the time-out of the exchange sending it to the client plus the time-out of the exchange used by the client to send it, the value **MUST** be limited to 5 minutes. This value **MUST** be validated by the module provider, any value that exceeds the timeout **MUST** be rejected. |
 | Task | task | The FHIR Task object in JSON format. |
 
+The timestamps follows the ["UNIX time"](https://en.wikipedia.org/wiki/Unix_time) convention, being the number of seconds since the epoch.
+
 #### Example message
 The code fragment below shows the FHIR task (in gray) as part of the JWT message payload.
 ```json
