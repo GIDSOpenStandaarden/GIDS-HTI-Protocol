@@ -1,7 +1,7 @@
 # GIDS Health Tools Interoperability 
-HTI:core version 1.0
-
+HTI:core version 1.0  
 Document version: 1.0  
+Current FHIR Stable Version: [R4](http://hl7.org/fhir/R4/)  
 Date: 26-4-2021
 
 ## Goals and Rationale
@@ -245,7 +245,7 @@ The FHIR task object **MUST** be exchanged as part of a JWT token. The FHIR task
 | Issue time | iat | The timestamp of generating the JWT token, the value of this field **MUST** be validated by the module provider to not be in the future. |
 | Expiration time | exp | This value **MUST** be the time-out of the exchange sending it to the client plus the time-out of the exchange used by the client to send it, the value **MUST** be limited to 5 minutes. This value **MUST** be validated by the module provider, any value that exceeds the timeout **MUST** be rejected. |
 | Task | task | The FHIR Task object in JSON format. |
-| FHIR Version | fhir-version | The FHIR version for the provided `Task`. When this field is not provided, the FHIR version **MUST** be the latest stable FHIR release. Consumers should evaluate this field in a case-insensitive manner. Currently, the following fields are allowed: `STU3`, `R4` (current stable release) and `R5`. It is strongly advised to always set this field, even when using the latest stable FHIR version. This prevents HTI breaking after a new FHIR stable release. |  
+| FHIR Version | fhir-version | The FHIR version for the provided `Task`. When this field is not provided, the FHIR version **MUST** be the latest stable FHIR release. Consumers should evaluate this field in a case-insensitive manner. Currently, the following fields are allowed: `STU3`, `R4` and `R5`. It is strongly advised to always set this field, even when using the latest stable FHIR version. This prevents HTI breaking after a new FHIR stable release. |  
 
 #### Example message
 The code fragment below shows the FHIR task (in gray) as part of the JWT message payload.  The example uses FHIR STU3, which is not the latest stable FHIR release. In this case, the `fhir-version` is mandatory.
@@ -401,7 +401,7 @@ This section provides an overview of the requirements and responsibilities in Mo
 | * the functional task, the definition of the task, and the people involved, and |
 | * information about the sending system, the recipient system and the message itself. |
 | The FHIR task object MUST at least use the STU3 version. |
-| The FHIR version MUST be set when not using the latest stable  FHIR version. |
+| The FHIR version MUST be set when not using the latest stable FHIR version. |
 | The JSON serialization MUST be used for FHIR task objects. |
 | The fields used in the FHIR task object MUST match the table FHIR field mapping. |
 | The task id field MUST be persistent over the timeframe the task is active. |
