@@ -1,13 +1,46 @@
+
 # GIDS Health Tools Interoperability 
 HTI:core version 1.0  
 Document version: 1.0  
 Current FHIR Stable Version: [R4](http://hl7.org/fhir/R4/) ([see all versions](http://hl7.org/fhir/directory.html))  
 Date: 26-4-2021
 
+- [GIDS Health Tools Interoperability](#gids-health-tools-interoperability)
+  - [Goals and Rationale](#goals-and-rationale)
+  - [About this document](#about-this-document)
+  - [Architecture](#architecture)
+    - [Concepts](#concepts)
+    - [Domain model](#domain-model)
+    - [Assumptions](#assumptions)
+  - [Implementation guide](#implementation-guide)
+    - [Semantic roles and responsibilities](#semantic-roles-and-responsibilities)
+    - [① The FHIR task object](#-the-fhir-task-object)
+    - [② The message format](#-the-message-format)
+    - [③ The message exchange](#-the-message-exchange)
+    - [Putting it all together](#putting-it-all-together)
+  - [Profiles](#profiles)
+    - [FHIR Store profile (HTI:smart_on_fhir)](#fhir-store-profile-htismart_on_fhir)
+    - [JWE message encryption (HTI:jwe)](#jwe-message-encryption-htijwe)
+    - [Restrictions](#restrictions)
+    - [Layout of the message](#layout-of-the-message)
+    - [Tip: JWT and JWE message detection](#tip-jwt-and-jwe-message-detection)
+    - [Configuration and storage requirements](#configuration-and-storage-requirements)
+    - [3rd party launches (HTI:3rdparty)](#3rd-party-launches-hti3rdparty)
+    - [Mapping of the FHIR task](#mapping-of-the-fhir-task)
+    - [Scenario’s](#scenarios)
+- [Implementation checklist](#implementation-checklist)
+  - [The portal application](#the-portal-application)
+  - [The module application](#the-module-application)
+  - [General requirements](#general-requirements)
+- [Connection with the SNS Launch protocol](#connection-with-the-sns-launch-protocol)
+- [Test tools and validators](#test-tools-and-validators)
+  - [Introduction](#introduction)
+  - [The module testsuite](#the-module-testsuite)
+
 ## Goals and Rationale
-The GIDS Health Tool Interoperability protocol (HTI) is inspired by the IMS - Learning Tool Interoperability (LTI) which has had a tremendous proven impact on the relation between learner management systems and learning tool providers. The objectives of LTI are: 
- 1. To provide a mash-up style deployment model which is easy to configure by URL, key and secret. 
- 1. To define a protocol that allows for SSO which preserves the learning context and roles within that context.  
+The GIDS Health Tool Interoperability protocol (HTI) is inspired by the IMS - Learning Tool Interoperability (LTI) which has had a tremendous proven impact on the relation between learner management systems and learning tool providers. The objectives of LTI are:
+ 1. To provide a mash-up style deployment model which is easy to configure by URL, key and secret.
+ 1. To define a protocol that allows for SSO which preserves the learning context and roles within that context.
  1. To make links to external applications portable by defining shared data elements.
 
 LTI has simplified the integration of external tools into learner management systems, and a bright new landscape of tool providers has emerged. The key concepts the LTI being successful has been:
@@ -22,12 +55,12 @@ The HTI standard applies these concepts when it comes to defining a successful l
  1. The launch message contains no personal data.
  1. More restrictions on security, privacy and sharing data.
 
- 
+
 The HTI standard has the following goals.
 
-#### Ease of software implementation. 
+#### Ease of software implementation.
 The protocol should be easy to implement. This is done by making use of a simple core specification and allowing for more complexity and additional functionality in the form of profiles, and the use of existing standards.
-#### Ease of use and configuration. 
+#### Ease of use and configuration.
 The protocol should be easy to configure from both the module and portals' side. In essence, an exchange of endpoint URL and public key pair should be sufficient.
 #### Scalable, decentral, and point to point.
 The architecture should not rely on external or central services and should be point-to-point in the sense that parties should be able to connect without relying on other parties and it should scale infinitely.
@@ -40,19 +73,19 @@ The standard makes use of existing technologies and standards, such as JWT, JWE 
 
 
 ## About this document
-This document makes use of the Requirement Levels as defined in [rfc2119](https://www.ietf.org/rfc/rfc2119.txt), commonly referred to as the MoSCoW method. A summary of the MoSCoW requirement can be found in the 
-section Implementation checklist. We have tried to make use of illustrations to visually enrich the concepts and relations between concepts of the standard. Examples are used whenever possible. Besides this document, a testsuite is made available, and reference implementations are published to github to help developers in their implementation journey. 
+This document makes use of the Requirement Levels as defined in [rfc2119](https://www.ietf.org/rfc/rfc2119.txt), commonly referred to as the MoSCoW method. A summary of the MoSCoW requirement can be found in the
+section Implementation checklist. We have tried to make use of illustrations to visually enrich the concepts and relations between concepts of the standard. Examples are used whenever possible. Besides this document, a testsuite is made available, and reference implementations are published to github to help developers in their implementation journey.
 
 
 ## Architecture
-The health tool interoperability standard (HTI) connects portals with modules like e-health treatments, (serious)games of any other type of functionality. This standard defines the concept of launch that entails both a transition from the portal to the module and a start of a new session on the module’s side. The HTI:core standard defines the communication protocol. the message format and the message exchange that is required to start a module from a portal in a domain. 
+The health tool interoperability standard (HTI) connects portals with modules like e-health treatments, (serious)games of any other type of functionality. This standard defines the concept of launch that entails both a transition from the portal to the module and a start of a new session on the module’s side. The HTI:core standard defines the communication protocol. the message format and the message exchange that is required to start a module from a portal in a domain.
 
 ![](images/image4.png)
 
 ### Concepts
 * Portal, the service that links to the module, that is, an application like a tool, a game, or a treatment.
 * Module provider, the service that delivers applications like tools, games, and/or treatments to the portal.
-* Message, the package exchanged between portal and module that contains the relevant launch information. 
+* Message, the package exchanged between portal and module that contains the relevant launch information.
 * Domain, the scope of the data shared in the launch.
 
 ### Domain model
@@ -82,12 +115,12 @@ As a consequence of the fact that no personal data may be exchanged by the launc
 ![](images/image13.png)
 
 #### Domains and scope of the persistent user identifier
-The user identifier **MUST** be unique in each domain, and **MUST NOT** be shared between domains. If the relations between portal and module are between the same two legal entities **and** if there is a clear need to link the users identities between those relations **then** the portal **MAY** use one domain for multiple relations of the same user. **Otherwise** each relation **MUST** have each own domain. 
+The user identifier **MUST** be unique in each domain, and **MUST NOT** be shared between domains. If the relations between portal and module are between the same two legal entities **and** if there is a clear need to link the users identities between those relations **then** the portal **MAY** use one domain for multiple relations of the same user. **Otherwise** each relation **MUST** have each own domain.
 
 
 ![](images/image9.png)
 
-#### User consent 
+#### User consent
 The HTI:core specification specifically prohibits the exchange of personal data, however specific profiles that extend the HTI:core standard are allowed to exchange personal data. Thereby the HTI:core standard states that, If one of the systems in the domain transfers information from one system to another system in the domain, the user **MUST** provide consent. When asking consent ,the user **MUST** be informed about all of the following:
 * The source of the data.
 * What data is shared.
@@ -96,8 +129,7 @@ The HTI:core specification specifically prohibits the exchange of personal data,
 * For what purpose the data will be shared.
 
 The user **MUST** be informed in a short and straightforward message, that **MUST** be in understandable language of maximum B1 level of the [CEFR framework](https://en.wikipedia.org/wiki/Common_European_Framework_of_Reference_for_Languages). Preferably the users’ primary language **SHOULD** be used.  It **MUST** be clear to the user what is asked and for what purpose.
-Please note that the notion of a domain does not imply that consent can be shared between module providers and portals with domain level consent. 
-
+Please note that the notion of a domain does not imply that consent can be shared between module providers and portals with domain level consent.
 
 #### Profiles
 The HTI:core standard defines the core part of the standard, consisting of the module launch. The HTI:core standard **MAY** be extended with profiles. These profiles **MAY** do the following:
@@ -112,7 +144,7 @@ A HTI profile **MUST** be documented properly and be the profile **MUST** clear 
 * All involved must have explicit users’ consent if personal data is disclosed to other parties.
 * The standard may be extended with profiles, the core specification is defined as HTI:core.
 
- 
+
  ## Implementation guide
 The HTI:core standard defines the exchange of a message from the portal to the module. This exchange consists of the following parts:
  * ① The contents of the message: the **FHIR task object**.
@@ -123,7 +155,7 @@ The HTI:core standard defines the exchange of a message from the portal to the m
 
 ### Semantic roles and responsibilities
 As the HTI:core specification exists of three parts, these parts each have different roles and responsibilities. These are:
- * The ① FHIR task object **MUST** only contain information about the functional task, the definition of the task, and the people involved. 
+ * The ① FHIR task object **MUST** only contain information about the functional task, the definition of the task, and the people involved.
  * The ② JWT message **MUST** only contain information about the sending system, the recipient system and the message itself.
  * The ③ exchange of the message **MUST NOT** contain any information that falls in the categories defined by ① and ②. For example, it is not allowed to refer to a treatment by encoding one in the launch URL.
 The diagram below summarizes these concepts.
@@ -258,6 +290,8 @@ src.definition : uri as vs -> tgt.instantiatesUri = vs;
 src.definition : Reference as vs -> tgt.instantiatesCanonical = vs;
 ```
 
+The timestamps follows the ["UNIX time"](https://en.wikipedia.org/wiki/Unix_time) convention, being the number of seconds since the epoch.
+
 #### Example message
 The code fragment below shows the FHIR task (in gray) as part of the JWT message payload.  The example uses FHIR STU3, which is not the latest stable FHIR release. In this case, the `fhir-version` is mandatory.
 ```json
@@ -308,7 +342,7 @@ The module provider needs to configure the following
 ![](images/image6.png)
 
 ### ③ The message exchange
-By the HTI:core specification, the message **MUST** be posted to the module application as part of a form encoded POST request (application/x-www-form-urlencoded). The token **MUST** be placed in the “token” field. Additional HTI profiles **MAY** define alternative means of exchanging the JWT token. The portal **SHOULD** use the form-post-redirect pattern to exchange the token via the client’s browser. This pattern works by rendering a form on the client's browser that contains the token as a hidden field. This form is submitted by javascript. This exchange **MUST** be done over the https protocol only.  
+By the HTI:core specification, the message **MUST** be posted to the module application as part of a form encoded POST request (application/x-www-form-urlencoded). The token **MUST** be placed in the “token” field. Additional HTI profiles **MAY** define alternative means of exchanging the JWT token. The portal **SHOULD** use the form-post-redirect pattern to exchange the token via the client’s browser. This pattern works by rendering a form on the client's browser that contains the token as a hidden field. This form is submitted by javascript. This exchange **MUST** be done over the https protocol only.
 
 Example code
 
@@ -345,13 +379,15 @@ The SMART on FHIR profile is elaborated on the following document:
 [HTI on the SMART App Launch Framework](https://docs.google.com/document/d/1qbe2IMIS_zXKMQZY2mQHBUufIHEwMEHo4ESEDmN8P80/edit?usp=sharing)
 
 ### JWE message encryption (HTI:jwe)
-In addition to the JWT token, it is also possible to wrap the JWT token in a JWE envelope. The advantage of wrapping the JWT message in a JWE is:
-* The contents of the message can no longer be inspected by the end-user and is less sensitive to data leakage.
-* The message can only be unpacked by the receiver, thereby the communication is more secure.
-Disadvantages of the usage of JWE encryption are:
-* More added complexity to the configuration and message creation.
-* More difficulty to debug the contents of the JWT message.
+In addition to the JWT token, it is also possible to wrap the JWT token in a JWE envelope. The advantage of wrapping the JWT message in a JWE are:
+* The contents of the message can no longer be inspected by the end-user.
+* The message can only be unpacked by the receiver
 
+This adds an extra layer of security over the communication, minimizing the risk of data leak even further.
+
+Disadvantages of using JWE encryption are:
+* Added complexity to the configuration and message creation.
+* Increased difficulty to debug the contents of the JWT message.
 
 ### Restrictions
 The additional requirement for using a JWE message is as follows:
@@ -368,7 +404,7 @@ If you, as a module provider, wish to support both JWE and JWT tokens, it is pos
 * If the token contains four dots (.), the token is a JWT token wrapped in a JWE token.
 
 ### Configuration and storage requirements
-The portal needs to configure the following: 
+The portal needs to configure the following:
 * The public key of the module provider message encryption. The key id (kid) must be part of the token header.
 
 The module provider needs to configure the following
@@ -387,7 +423,7 @@ The 3rd party launch is an extension of the HTI launch message, where the FHIR t
 * Patient
 * Practitioner
 * RelatedPerson|
- 
+
 The `for` field should be used for the person who is actively participating in the launch. The for fields allows a reference to any FHIR object, depending on the context we advise to use the Patient, Practitioner, and RelatedPerson type, or the Person type if none of these is applicable.
 The `owner` field should be used in use cases where the person actively participating in the launch is not the owner of the task. Think of a related person or caregiver that launches a task of someone else.
 
@@ -404,8 +440,8 @@ This section provides an overview of the requirements and responsibilities in Mo
 
 ## The portal application
 
-| Description | 
-| ------------- | 
+| Description |
+| ------------- |
 | The FHIR task object MUST only contain information about the functional task, the definition of the task, and the people involved. |
 | The  JWT message MUST only contain information about the sending system, the recipient system and the message itself. |
 | The  exchange of the message MUST NOT contain any information about: |
@@ -426,17 +462,17 @@ This section provides an overview of the requirements and responsibilities in Mo
  | The fields used in the JWT payload MUST match the table JWT field mapping. |
  | The JWT MUST use an asymmetric public / private key to sign the JWT tokens. |
  | The JWT token MUST be exchanged with the module by a form encoded POST request, the token MUST be in the “token” field. |
- | The JWT token MUST be exchanged over an encrypted http (https) connection. | 
+ | The JWT token MUST be exchanged over an encrypted http (https) connection. |
 
 
 
  ## The module application
 As the creation of the message is the responsibility of the portal application, the module application can assume that most the restrictions and limitations are implemented correctly by the portal application. However, the portal application does have some extra responsibilities that it MUST be enforcing.
 
-| Description | 
-| ------------- | 
+| Description |
+| ------------- |
 | The module application **MUST** expose the launch URL on a secure connection (https). |
-| The module application **MUST NOT** expose any of the following information in the launch URL:<ul><li>the functional task, the definition of the task, and<li>the people involved, and information about the sending system, the recipient system and the message itself.</li></ul> |
+| The module application **MUST NOT** expose any of the following information in the launch URL:<ul><li>the functional task, the definition of the task, and the people involved, and <li>information about the sending system, the recipient system and the message itself.</li></ul> |
 | The portal application **MAY** additionally identify the user and link that data to the persistent pseudo identifier of the FHIR object. | 
 | The module **MUST** support at least the following JWT signing algorithms: RS256, RS384, and RS512 and ES256, ES384, and ES512 |
 | The Task **MUST** be deserialized with the provided FHIR version (`fhir-version` claim). If the version is not provided, the latest stable FHIR version will be used. |
@@ -449,9 +485,9 @@ As the creation of the message is the responsibility of the portal application, 
 | * The Issue time (iat) **MUST** be validated. |
 
  ## General requirements
- 
-| Description | 
-| ------------- | 
+
+| Description |
+| ------------- |
 | This HTI:core specification **MAY** be extended with profiles that extend this specification, replace parts of this specification, or define additional parts to this specification. Such a profile **MUST** be documented properly, and it **MUST** be clear about the relation to the HTI:core standard. The profile **MUST** be identified with a namespaced identifier starting with “HTI:”. |
 
 
@@ -464,7 +500,7 @@ The SNS launch protocol can be seen as a predecessor of the HTI standard. The ma
 Based on the changes above, the mapping between the fields is as follows:
 
 | Field(s) in SNS| Field(s) in HTI | Remark |
-| ------------- | ------------- | ------------- | 
+| ------------- | ------------- | ------------- |
 | | Task/id | New in HTI |
 | email, given_name, middle_name and family_name | - | Not mapped in HTI |
 | User identity (sub) | Task/for/reference | Should be prepended with Person |
@@ -478,7 +514,7 @@ A testsuite for both the development of [the module](https://hti-test-suite.sns.
 By clicking the Information icon, information regarding the field will be displayed.
 
 ## The module testsuite
-In order to develop a module, there is a testsuite available. This suite consists of three parts: the FHIR object, the JWT message and the exchange. 
+In order to develop a module, there is a testsuite available. This suite consists of three parts: the FHIR object, the JWT message and the exchange.
 The FHIR task
 The FHIR part sets the values in the FHIR task object. The testsuite generates the ID values automatically, and stores the generated values in a cookie in the browser. These values are stored in the browser until the reset button is clicked. If the reset button is clicked, the form is populated with a new set of generated values.
 
