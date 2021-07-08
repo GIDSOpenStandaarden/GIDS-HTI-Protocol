@@ -1,7 +1,7 @@
 
 # GIDS Health Tools Interoperability 
-HTI:core version 1.0  
-Document version: 1.0  
+HTI:core version 1.1  
+Document version: 1.1  
 Current FHIR Stable Version: [R4](http://hl7.org/fhir/R4/) ([see all versions](http://hl7.org/fhir/directory.html))  
 Date: 26-4-2021
 
@@ -156,7 +156,7 @@ The HTI:core standard defines the exchange of a message from the portal to the m
 ### Semantic roles and responsibilities
 As the HTI:core specification exists of three parts, these parts each have different roles and responsibilities. These are:
  * The ① FHIR task object **MUST** only contain information about the functional task, the definition of the task, and the people involved.
- * The ② JWT message **MUST** only contain information about the sending system, the recipient system and the message itself.
+ * The ② JWT message **MUST** only contain information about the sending system, the launching user, the recipient system and the message itself.
  * The ③ exchange of the message **MUST NOT** contain any information that falls in the categories defined by ① and ②. For example, it is not allowed to refer to a treatment by encoding one in the launch URL.
 The diagram below summarizes these concepts.
 
@@ -198,18 +198,16 @@ Conceptually, the FHIR task is mapped to the domain concepts as follows:
 | ------------- | ------------- |
 | id  | A reference to the instance of the task.  |
 | instantiatesCanonical  | A URL pointing to the definition of the task  |
-| for  | A reference to the type and persistent pseudo identifier of the user.  |
+| for  | A reference to the type and persistent pseudo identifier of the user this task is intended for. Typically, this will be the `Patient` that performs the `Task` |
 
 The table below contains an exclusive list of fields, no additional fields from the FHIR specification are allowed in the HTI:core standard. If you intend to use any additional fields from the FHIR standard, you **MUST** specify a HTI profile to do so.
-
-
 
 | FHIR task field | Required | Value |
 | ------------- | ------------- | ------------- |
 | resourceType | yes | This field should always be populated with the value "Task". |
 | id  | yes  | The identifier of the task. More details are described in the [Task id](#the-task-id) section. |
 | instantiatesCanonical | no | A [canonical](http://hl7.org/fhir/R4/references.html#canonical) URL that references the FHIR definition. More details are described in the [activity definition](https://www.hl7.org/fhir/activitydefinition.html) documentation. |
-| for | yes | A reference to the user responsible for the task. More details are described in the [person reference](#person-reference) section. |
+| for | yes | A [person reference](#person-reference) to the user that should execute the task. |
 | intent | yes | This field must be populated with a value from the [FHIR value set RequestIntent](https://www.hl7.org/fhir/R4/valueset-request-intent.html), if not applicable, use "plan". |
 | status | yes | Status of the task. This field must be populated with one of the values defined by the [FHIR value set TaskStatus](https://www.hl7.org/fhir/R4/valueset-task-status.html). |
 
@@ -221,7 +219,7 @@ An example of the resulting FHIR task object:
     "id": "a5e57fd0",
     "instantiatesCanonical": "https://example.org/ActivityDefinition/a5e58200",
     "for": {
-      "reference": "Person/a5e5844e"
+      "reference": "Patient/a5e5844e"
     },
     "intent": "plan",
     "status": "requested"
@@ -241,8 +239,9 @@ The above format is [preferred](http://hl7.org/fhir/R4/activitydefinition-defini
 The `instantiatesCanonical` is not a required field. However we discourage the omittance of the field, there are scenarios we want to support that do not require a task definition to be present in the launch.
 
 ##### Person reference
-When referring to persons in the FHIR task object, please keep in mind that FHIR does allow personal details such as e-mail addresses and displayname as part of the FHIR standard, however the HTI:core standard explicitly forbids the personal data to be exchanged by the launch. The user **MUST** be identified by a persistent pseudo identifier.
-The `for` field **SHOULD** be used for the person for who is actively participating in the launch and is responsible for performing the task. The `for` field is a reference that consists of both resource type and identifier. This implies that the format **MUST** be:
+When referring to persons in the FHIR task object, please keep in mind that a FHIR reference does allow personal details such as e-mail addresses and displayname as part of the FHIR standard. However, the HTI:core standard explicitly forbids the personal data to be exchanged by the launch. The user **MUST** be identified by a persistent pseudo identifier.   
+The `for` field **SHOULD** always be a [person reference](#person-reference) to the user that should execute the task   
+The `for` field is a reference that consists of both resource type and identifier. This implies that the format **MUST** be:
 ```
 <ResourceType>/<Identifier>
 ```
@@ -252,9 +251,7 @@ The resource type **MUST** be a FHIR resource type, the FHIR task object does no
  * RelatedPerson
  * Person
 
-We advise to use the Person type if unsure about the resource type of the `for` field.
-
-Please note that the [3rd party launches](#3rd-party-launches) profile supports launches to tasks that are owned by other persons than the person referred to by the `for` field by making use of the `owner` field.
+In most cases, tasks will be assigned to `Patients`. We advise to use the `Person` type if unsure about the resource type of the `for` field.
 
 #### Configuration and storage requirements
 The portal has the following storage and/or configuration requirements:
@@ -276,6 +273,7 @@ The FHIR task object **MUST** be exchanged as part of a JWT token. The FHIR task
 | Unique message id | jti | A unique identifier for this message. This value **MUST** be treated as a NONCE, a subsequent message with an identical jti **MUST** be rejected. The jti value must be a random or pseudo number, the jti **MUST** contain enough entropy to block brute-force attacks. |
 | Issue time | iat | The timestamp of generating the JWT token, the value of this field **MUST** be validated by the module provider to not be in the future. |
 | Expiration time | exp | This value **MUST** be the time-out of the exchange sending it to the client plus the time-out of the exchange used by the client to send it, the value **MUST** be limited to 5 minutes. This value **MUST** be validated by the module provider, any value that exceeds the timeout **MUST** be rejected. |
+| Subject | sub | This value **MUST** be a person reference to the user executing the launch. This way, applications can understand _who_ is launching the provided `Task`. For example, `Practitioner/82421`  |
 | Task | task | The FHIR Task object in JSON format. |
 | FHIR Version | fhir-version | The FHIR version for the provided `Task`. When this field is not provided, the FHIR version **MUST** be the latest stable FHIR release. Consumers should evaluate this field in a case-insensitive manner. Currently, the following fields are allowed: `STU3`, `R4` and `R5`. It is strongly advised to always set this field, even when using the latest stable FHIR version. This prevents HTI breaking after a new FHIR stable release. |  
 
@@ -412,29 +410,6 @@ The module provider needs to configure the following
 
 ![](images/image3.png)
 
-### 3rd party launches (HTI:3rdparty)
-The 3rd party launch is an extension of the HTI launch message, where the FHIR task object makes use of an additional `owner` field to denote a launch done by a different person of the launch owner.
-
-### Mapping of the FHIR task
-
-| FHIR task field | Required | Launch veld |
-| ------------- | ------------- | ------------- |
-| Owner | No | ------------- |Persistent pseudo identifier of the user responsible the task with the format <UserType>/<Identifier>. Where UserType can should one of: * Organization
-* Patient
-* Practitioner
-* RelatedPerson|
-
-The `for` field should be used for the person who is actively participating in the launch. The for fields allows a reference to any FHIR object, depending on the context we advise to use the Patient, Practitioner, and RelatedPerson type, or the Person type if none of these is applicable.
-The `owner` field should be used in use cases where the person actively participating in the launch is not the owner of the task. Think of a related person or caregiver that launches a task of someone else.
-
-### Scenario’s
-The table below displays the use of the for and owner fields in different scenarios.
-| Scenario | For | Owner |
-| ------------- | ------------- | ------------- |
-| Client | Patient/x | Patient/x |
-| Caregiver | Practitioner/y | Patient/x |
-| 3rd person| RelatedPerson/z | Patient/x |
-
 # Implementation checklist
 This section provides an overview of the requirements and responsibilities in Moscow statements of both the portal and module application.
 
@@ -453,10 +428,11 @@ This section provides an overview of the requirements and responsibilities in Mo
 | The fields used in the FHIR task object MUST match the table FHIR field mapping. |
 | The task id field MUST be persistent over the timeframe the task is active. |
 | The task definition reference MUST be of type TaskDefinition and of format: ActivityDefinition/<Identifier> |
- | The user identifier (for field) MUST be a persistent pseudo identifier. |
- | The user identifier (for field) MUST be both unique and persistent in each domain |
- | The user identifier (for field) SHOULD be used for the person actively participating in the task. |
- | The user identifier (for field) MUST be a FHIR task reference and of format: <ResourceType>/<Identifier>. The resource type MUST be a FHIR resource, and MAY be one of, and not limited, to: Patient, Practitioner, RelatedPerson, Person |
+ | The user identifier (`for` field & JWT `sub`) MUST be a persistent pseudo identifier. |
+ | The user identifier (`for` field & JWT `sub`) MUST be both unique and persistent in each domain |
+ | The user identifier (`for` field) MUST be used for the user that should execute the task. |
+ | The user identifier (JWT `sub`) MUST be used for the user that is launching the task. |
+ | The user identifier (`for` field & JWT `sub`) MUST be a FHIR user reference and of format: &lt;ResourceType&gt;/&lt;Identifier&gt;. The resource type MUST be a FHIR resource, and MAY be one of, and not limited, to: Patient, Practitioner, RelatedPerson, Person |
  | The FHIR task object MUST be exchanged as part of a JWT token. |
  | The FHIR task object MUST be serialized as JSON and included in the nested field "task". |
  | The fields used in the JWT payload MUST match the table JWT field mapping. |
@@ -477,12 +453,14 @@ As the creation of the message is the responsibility of the portal application, 
 | The module **MUST** support at least the following JWT signing algorithms: RS256, RS384, and RS512 and ES256, ES384, and ES512 |
 | The Task **MUST** be deserialized with the provided FHIR version (`fhir-version` claim). If the version is not provided, the latest stable FHIR version will be used. |
 | The JWT message **MUST** be validated on the following |
-| * The audience (aud) **MUST** match the module application. |
-| * The issuer (iss) **MUST** be known to the system. |
-| * The public key of the issuer **MUST** be used to validate the signature of the message. |
-| * The JWT identifier (jti) **MUST** be validated against replay attacks. |
-| * The expiration time (exp) of the JWT token **MUST** be validated. |
-| * The Issue time (iat) **MUST** be validated. |
+| The audience (aud) **MUST** match the module application. |
+| The issuer (iss) **MUST** be known to the system. |
+| The Subject (sub) **SHOULD** be used to identify *who* is launching the Task. |
+| The Task.for **SHOULD** be used to identify who the Task is *intended* for. |
+| The public key of the issuer **MUST** be used to validate the signature of the message. |
+| The JWT identifier (jti) **MUST** be validated against replay attacks. |
+| The expiration time (exp) of the JWT token **MUST** be validated. |
+| The Issue time (iat) **MUST** be validated. |
 
  ## General requirements
 
