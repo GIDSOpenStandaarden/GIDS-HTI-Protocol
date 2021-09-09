@@ -1,5 +1,22 @@
 # GIDS Health Tools Interoperability Changelog
 
+---
+## HTI:core version 1.1
+Document version: 1.1   
+Date: 08-06-2021
+
+HTI uses a FHIR `Task` in the launch. Before, HTI would define the user launching a `Task` with the `Task.for` field. Whilst 
+persisting a `Task`, the `Task.for` field will always be the `Resource` this `Task` is intended for. 
+The goal of this change is to make sure this `Task` can be interpreted equally for clients that are 
+and are not using a FHIR store. Therefore the "launching user" has been moved from `Task.for` to
+the JWT [sub claim](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2).
+
+This also caused the `HTI:3rdparty` profile to become  irrelevant. Therefore, it has been removed.
+
+The above are breaking changes. However, as HTI is not used in production-like situations yet, we 
+decided to keep this a "1.x" version.
+
+---
 ## HTI:core version 1.0
 Document version: 1.0  
 Date: 26-4-2021
