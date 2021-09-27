@@ -3,7 +3,7 @@
 HTI:core version 1.1
 Document version: 1.1.1
 Current FHIR Stable Version: [R4](http://hl7.org/fhir/R4/) ([see all versions](http://hl7.org/fhir/directory.html))  
-Date: 27-10-2021
+Date: 27-09-2021
 
 - [GIDS Health Tools Interoperability](#gids-health-tools-interoperability)
   - [Goals and Rationale](#goals-and-rationale)
@@ -193,7 +193,7 @@ Conceptually, the FHIR task is mapped to the domain concepts as follows:
 | instantiatesCanonical  | A URL pointing to the definition of the task  |
 | for  | A reference to the type and persistent pseudo identifier of the user this task is intended for. Typically, this will be the `Patient` that performs the `Task` |
 
-The table below contains the required and suggested list of fields, additional fields from the FHIR specification **MAY** be used in the HTI:core standard, however the **MUST NOT** contain personal information about the user. If you intend to use any additional fields from the FHIR standard, you **COULD** specify a HTI profile to do so.
+The table below contains the required and suggested list of fields, additional fields from the FHIR specification **MAY** be used in the HTI:core standard, however they **MUST NOT** contain personal information about the user. If you intend to use any additional fields from the FHIR standard, you **COULD** specify a HTI profile to do so.
 
 | FHIR task field | Required | Value |
 | ------------- | ------------- | ------------- |
