@@ -2,6 +2,23 @@
 
 ---
 ## HTI:core version 1.1
+Document version: 1.1.1 
+Date: 27-10-2021
+
+This is a documentation only update. The restriction on additional the FHIR fields has been relaxed. The intention 
+has always been to be able to use the FHIR resource as it is used in the domain, however, it should not contain 
+personal information. Somehow the documentation has been more rigid and stated that this could ONLY be done if there 
+has been an additional profile defined. This might be overkill and has been relaxed.
+
+The exp field has been clarified some more, it contained a fairly useless statement about transfer times. The 
+definition has been simplified; no longer valid after this timestamp. Period.
+
+Documentation updates:
+ * Issue rn 6: Explanation for the exp field in the JWT is a bit unclear
+ * Issue nr 12: Remove the restriction of additional FHIR fields
+
+---
+## HTI:core version 1.1
 Document version: 1.1   
 Date: 08-06-2021
 

@@ -1,9 +1,9 @@
 
 # GIDS Health Tools Interoperability 
-HTI:core version 1.1  
-Document version: 1.1  
+HTI:core version 1.1
+Document version: 1.1.1
 Current FHIR Stable Version: [R4](http://hl7.org/fhir/R4/) ([see all versions](http://hl7.org/fhir/directory.html))  
-Date: 26-4-2021
+Date: 27-10-2021
 
 - [GIDS Health Tools Interoperability](#gids-health-tools-interoperability)
   - [Goals and Rationale](#goals-and-rationale)
@@ -21,13 +21,6 @@ Date: 26-4-2021
   - [Profiles](#profiles)
     - [FHIR Store profile (HTI:smart_on_fhir)](#fhir-store-profile-htismart_on_fhir)
     - [JWE message encryption (HTI:jwe)](#jwe-message-encryption-htijwe)
-    - [Restrictions](#restrictions)
-    - [Layout of the message](#layout-of-the-message)
-    - [Tip: JWT and JWE message detection](#tip-jwt-and-jwe-message-detection)
-    - [Configuration and storage requirements](#configuration-and-storage-requirements)
-    - [3rd party launches (HTI:3rdparty)](#3rd-party-launches-hti3rdparty)
-    - [Mapping of the FHIR task](#mapping-of-the-fhir-task)
-    - [Scenario’s](#scenarios)
 - [Implementation checklist](#implementation-checklist)
   - [The portal application](#the-portal-application)
   - [The module application](#the-module-application)
@@ -36,7 +29,7 @@ Date: 26-4-2021
 - [Test tools and validators](#test-tools-and-validators)
   - [Introduction](#introduction)
   - [The module testsuite](#the-module-testsuite)
-
+  
 ## Goals and Rationale
 The GIDS Health Tool Interoperability protocol (HTI) is inspired by the IMS - Learning Tool Interoperability (LTI) which has had a tremendous proven impact on the relation between learner management systems and learning tool providers. The objectives of LTI are:
  1. To provide a mash-up style deployment model which is easy to configure by URL, key and secret.
@@ -131,7 +124,7 @@ The HTI:core specification specifically prohibits the exchange of personal data,
 The user **MUST** be informed in a short and straightforward message, that **MUST** be in understandable language of maximum B1 level of the [CEFR framework](https://en.wikipedia.org/wiki/Common_European_Framework_of_Reference_for_Languages). Preferably the users’ primary language **SHOULD** be used.  It **MUST** be clear to the user what is asked and for what purpose.
 Please note that the notion of a domain does not imply that consent can be shared between module providers and portals with domain level consent.
 
-#### Profiles
+#### HTI profiles
 The HTI:core standard defines the core part of the standard, consisting of the module launch. The HTI:core standard **MAY** be extended with profiles. These profiles **MAY** do the following:
  * ***Extend*** the specification by adding or modifying fields to the existing data model.
  * ***Replace*** specific parts of the standard, such as the way information is exchanged between systems.
@@ -200,7 +193,7 @@ Conceptually, the FHIR task is mapped to the domain concepts as follows:
 | instantiatesCanonical  | A URL pointing to the definition of the task  |
 | for  | A reference to the type and persistent pseudo identifier of the user this task is intended for. Typically, this will be the `Patient` that performs the `Task` |
 
-The table below contains an exclusive list of fields, no additional fields from the FHIR specification are allowed in the HTI:core standard. If you intend to use any additional fields from the FHIR standard, you **MUST** specify a HTI profile to do so.
+The table below contains the required and suggested list of fields, additional fields from the FHIR specification **MAY** be used in the HTI:core standard, however the **MUST NOT** contain personal information about the user. If you intend to use any additional fields from the FHIR standard, you **COULD** specify a HTI profile to do so.
 
 | FHIR task field | Required | Value |
 | ------------- | ------------- | ------------- |
@@ -387,21 +380,21 @@ Disadvantages of using JWE encryption are:
 * Added complexity to the configuration and message creation.
 * Increased difficulty to debug the contents of the JWT message.
 
-### Restrictions
+#### Restrictions
 The additional requirement for using a JWE message is as follows:
 * The header must contain the key id (kid) of the public key used for encryption.
 
-### Layout of the message
+#### Layout of the message
 For details of the JWE standard, we refer to the JWE documentation. The diagram below displays the JWT and JWE token from a conceptual perspective
 
 ![](images/image7.png)
 
-### Tip: JWT and JWE message detection
+#### Tip: JWT and JWE message detection
 If you, as a module provider, wish to support both JWE and JWT tokens, it is possible to detect id the token is a JWT or JWE token by counting the number of dots in the token. The following rules apply.
 * If the token contains two dots (.), the token is a JWT token.
 * If the token contains four dots (.), the token is a JWT token wrapped in a JWE token.
 
-### Configuration and storage requirements
+#### JWE configuration and storage requirements
 The portal needs to configure the following:
 * The public key of the module provider message encryption. The key id (kid) must be part of the token header.
 
