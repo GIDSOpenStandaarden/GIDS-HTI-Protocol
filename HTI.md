@@ -25,6 +25,8 @@ Date: 26-4-2021
     - [Layout of the message](#layout-of-the-message)
     - [Tip: JWT and JWE message detection](#tip-jwt-and-jwe-message-detection)
     - [Configuration and storage requirements](#configuration-and-storage-requirements)
+  - [Additional identifiers for `for` attribute in `Task` resource (HTI:for_identifiers)](#additional-identifiers-for-for-attribute-in-task-resource-htifor_identifiers)
+  - [Identifier in `sub` claim (HTI:sub_identifier)](#identifier-in-sub-claim-htisub_identifier)
 - [Implementation checklist](#implementation-checklist)
   - [The portal application](#the-portal-application)
   - [The module application](#the-module-application)
@@ -406,6 +408,16 @@ The module provider needs to configure the following
 * The private key for message decryption, referred to by the kid in the message header. The public key of the keypair should be communicated with the module provider for encryption.
 
 ![](images/image3.png)
+
+## Additional identifiers for `for` attribute in `Task` resource (HTI:for_identifiers)
+
+The HTI:for_identifiers profile allows for the use of additional identifiers in the `for` field of the `Task` resource embedded in the token. The format and requirements of the identifiers **MUST** follow that of the FHIR specification of the applied FHIR [version](#fhir-version) specified in the token. For example for R4 of FHIR: https://www.hl7.org/fhir/task.html#resource and https://www.hl7.org/fhir/datatypes.html#Identifier.
+
+Using this profile most likely requires additional domain agreements between sender and receiver on the identifier system(s) that are used and their semantics.
+
+## Identifier in `sub` claim (HTI:sub_identifier)
+
+The HTI:sub_identifier profile lifts the restriction on the format of the `sub` claim and allows for a domain-specific agreement between sender and receiver on format and semantics.
 
 # Implementation checklist
 This section provides an overview of the requirements and responsibilities in Moscow statements of both the portal and module application.
