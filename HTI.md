@@ -482,7 +482,7 @@ Based on the changes above, the mapping between the fields is as follows:
 | iss, aud, jti iat, and exp | iss, aud, jti iat, and exp | All other fields are mapped the same. |
 
 # HTI on Mobile
-The HTI protocol can be used in mobile scenario's. With the concept of _deep linking_ the HTI token can be forwarded to the mobile application. In order to do so, the application needs to register and URL pattern with the underlying operating system, and the launching application needs to set the right context in order for the link to the application to work. For both Android and iOS the concepts are similar, the implementation details differ. 
+The HTI protocol can be used in mobile scenario's. With the concept of _deep linking_ the HTI token can be forwarded to the mobile application. In order to do so, the application needs to register an URL pattern with the underlying operating system, and the launching application needs to set the right context in order for the link to the application to work. For both Android and iOS the concepts are similar, the implementation details differ. 
 The concept of deep linking can also be applied to apps that are not already installed. This concept is called _conceptual deep linking_. Additional middleware is required to do so.
 
 # Test tools and validators
