@@ -129,6 +129,9 @@ The HTI:core specification specifically prohibits the exchange of personal data,
 The user **MUST** be informed in a short and straightforward message, that **MUST** be in understandable language of maximum B1 level of the [CEFR framework](https://en.wikipedia.org/wiki/Common_European_Framework_of_Reference_for_Languages). Preferably the users’ primary language **SHOULD** be used.  It **MUST** be clear to the user what is asked and for what purpose.
 Please note that the notion of a domain does not imply that consent can be shared between module providers and portals with domain level consent.
 
+####  Security Considerations
+The HTI:core launch procedure forwards an active user session from one application to the other. This could be considered as a Single Sign On (SSO) use case. The receiving module application **MUST** be aware of the fact that the incoming user identity **SHOULD** be checked additionally in conformance with the information about the user that the application processes. In case of a module application that processes medical and/or personal information, the module application **SHOULD** apply additional checks of the users' identities. 
+
 #### HTI profiles
 The HTI:core standard defines the core part of the standard, consisting of the module launch. The HTI:core standard **MAY** be extended with profiles. These profiles **MAY** do the following:
  * ***Extend*** the specification by adding or modifying fields to the existing data model.
