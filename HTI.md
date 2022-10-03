@@ -1,8 +1,8 @@
 
-# GIDS Health Tools Interoperability 
+# GIDS Health Tools Interoperability
 HTI:core version 1.1
 Document version: 1.1.1
-Current FHIR Stable Version: [R4](http://hl7.org/fhir/R4/) ([see all versions](http://hl7.org/fhir/directory.html))  
+Current FHIR Stable Version: [R4](http://hl7.org/fhir/R4/) ([see all versions](http://hl7.org/fhir/directory.html))
 Date: 27-09-2021
 
 - [GIDS Health Tools Interoperability](#gids-health-tools-interoperability)
@@ -21,11 +21,16 @@ Date: 27-09-2021
   - [Profiles](#profiles)
     - [FHIR Store profile (HTI:smart_on_fhir)](#fhir-store-profile-htismart_on_fhir)
     - [JWE message encryption (HTI:jwe)](#jwe-message-encryption-htijwe)
+      - [Restrictions](#restrictions)
+      - [Layout of the message](#layout-of-the-message)
+      - [Tip: JWT and JWE message detection](#tip-jwt-and-jwe-message-detection)
+      - [Configuration and storage requirements](#configuration-and-storage-requirements)
 - [Implementation checklist](#implementation-checklist)
   - [The portal application](#the-portal-application)
   - [The module application](#the-module-application)
   - [General requirements](#general-requirements)
 - [Connection with the SNS Launch protocol](#connection-with-the-sns-launch-protocol)
+- [HTI on Mobile](#hti-on-mobile)
 - [Test tools and validators](#test-tools-and-validators)
   - [Introduction](#introduction)
   - [The module testsuite](#the-module-testsuite)
@@ -232,8 +237,8 @@ The above format is [preferred](http://hl7.org/fhir/R4/activitydefinition-defini
 The `instantiatesCanonical` is not a required field. However we discourage the omittance of the field, there are scenarios we want to support that do not require a task definition to be present in the launch.
 
 ##### Person reference
-When referring to persons in the FHIR task object, please keep in mind that a FHIR reference does allow personal details such as e-mail addresses and displayname as part of the FHIR standard. However, the HTI:core standard explicitly forbids the personal data to be exchanged by the launch. The user **MUST** be identified by a persistent pseudo identifier.   
-The `for` field **SHOULD** always be a [person reference](#person-reference) to the user that should execute the task   
+When referring to persons in the FHIR task object, please keep in mind that a FHIR reference does allow personal details such as e-mail addresses and displayname as part of the FHIR standard. However, the HTI:core standard explicitly forbids the personal data to be exchanged by the launch. The user **MUST** be identified by a persistent pseudo identifier.
+The `for` field **SHOULD** always be a [person reference](#person-reference) to the user that should execute the task
 The `for` field is a reference that consists of both resource type and identifier. This implies that the format **MUST** be:
 ```
 <ResourceType>/<Identifier>
@@ -268,7 +273,7 @@ The FHIR task object **MUST** be exchanged as part of a JWT token. The FHIR task
 | Expiration time | exp | The "exp" (expiration time) claim identifies the expiration time on or after which the JWT **MUST NOT** be accepted for processing. The value **MUST** be limited to 5 minutes. This value **MUST** be validated by the module provider, any value that exceeds the timeout **MUST** be rejected. |
 | Subject | sub | This value **MUST** be a person reference to the user executing the launch. This way, applications can understand _who_ is launching the provided `Task`. For example, `Practitioner/82421`  |
 | Task | task | The FHIR Task object in JSON format. |
-| FHIR Version | fhir-version | The FHIR version for the provided `Task`. When this field is not provided, the FHIR version **MUST** be the latest stable FHIR release. Consumers should evaluate this field in a case-insensitive manner. Currently, the following fields are allowed: `STU3`, `R4` and `R5`. It is strongly advised to always set this field, even when using the latest stable FHIR version. This prevents HTI breaking after a new FHIR stable release. |  
+| FHIR Version | fhir-version | The FHIR version for the provided `Task`. When this field is not provided, the FHIR version **MUST** be the latest stable FHIR release. Consumers should evaluate this field in a case-insensitive manner. Currently, the following fields are allowed: `STU3`, `R4` and `R5`. It is strongly advised to always set this field, even when using the latest stable FHIR version. This prevents HTI breaking after a new FHIR stable release. |
 
 The timestamps follows the ["UNIX time"](https://en.wikipedia.org/wiki/Unix_time) convention, being the number of seconds since the epoch.
 
@@ -363,13 +368,13 @@ The diagram below displays an overview of all the steps of the HTI launch.
 
 ![](images/image10.png)
 
-## Profiles
+# Profiles
 
-### FHIR Store profile (HTI:smart_on_fhir)
+## FHIR Store profile (HTI:smart_on_fhir)
 The SMART on FHIR profile is elaborated on the following document:
 [HTI on the SMART App Launch Framework](https://docs.google.com/document/d/1qbe2IMIS_zXKMQZY2mQHBUufIHEwMEHo4ESEDmN8P80/edit?usp=sharing)
 
-### JWE message encryption (HTI:jwe)
+## JWE message encryption (HTI:jwe)
 In addition to the JWT token, it is also possible to wrap the JWT token in a JWE envelope. The advantage of wrapping the JWT message in a JWE are:
 * The contents of the message can no longer be inspected by the end-user.
 * The message can only be unpacked by the receiver
@@ -433,8 +438,6 @@ This section provides an overview of the requirements and responsibilities in Mo
  | The JWT token MUST be exchanged with the module by a form encoded POST request, the token MUST be in the “token” field. |
  | The JWT token MUST be exchanged over an encrypted http (https) connection. |
 
-
-
  ## The module application
 As the creation of the message is the responsibility of the portal application, the module application can assume that most the restrictions and limitations are implemented correctly by the portal application. However, the portal application does have some extra responsibilities that it MUST be enforcing.
 
@@ -442,7 +445,7 @@ As the creation of the message is the responsibility of the portal application, 
 | ------------- |
 | The module application **MUST** expose the launch URL on a secure connection (https). |
 | The module application **MUST NOT** expose any of the following information in the launch URL:<ul><li>the functional task, the definition of the task, and the people involved, and <li>information about the sending system, the recipient system and the message itself.</li></ul> |
-| The portal application **MAY** additionally identify the user and link that data to the persistent pseudo identifier of the FHIR object. | 
+| The portal application **MAY** additionally identify the user and link that data to the persistent pseudo identifier of the FHIR object. |
 | The module **MUST** support at least the following JWT signing algorithms: RS256, RS384, and RS512 and ES256, ES384, and ES512 |
 | The Task **MUST** be deserialized with the provided FHIR version (`fhir-version` claim). If the version is not provided, the latest stable FHIR version will be used. |
 | The JWT message **MUST** be validated on the following |
@@ -478,10 +481,14 @@ Based on the changes above, the mapping between the fields is as follows:
 | Subject (resource_id) | Task/instantiatesCanonical | Should be a canonical reference in HTI |
 | iss, aud, jti iat, and exp | iss, aud, jti iat, and exp | All other fields are mapped the same. |
 
+# HTI on Mobile
+The HTI protocol can be used in mobile scenario's. With the concept of _deep linking_ the HTI token can be forwarded to the mobile application. In order to do so, the application needs to register an URL pattern with the underlying operating system, and the launching application needs to set the right context in order for the link to the application to work. For both Android and iOS the concepts are similar, the implementation details differ. 
+The concept of deep linking can also be applied to apps that are not already installed. This concept is called _conceptual deep linking_. Additional middleware is required to do so.
+
 # Test tools and validators
 ## Introduction
 
-A testsuite for both the development of [the module](https://hti-test-suite.sns.gidsopenstandaarden.org/module.html) and [the portal](https://hti-test-suite.sns.gidsopenstandaarden.org/portal.html) applications is available in github. 
+A testsuite for both the development of [the module](https://hti-test-suite.sns.gidsopenstandaarden.org/module.html) and [the portal](https://hti-test-suite.sns.gidsopenstandaarden.org/portal.html) applications is available in github.
 By clicking the Information icon, information regarding the field will be displayed.
 
 ## The module testsuite
