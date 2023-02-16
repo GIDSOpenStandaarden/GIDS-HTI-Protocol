@@ -184,7 +184,7 @@ The table below contains the required and suggested list of fields for the HTI c
 | definition | url | no | A URL that references the definition of the task. |
 | sub | reference | yes | This is a [person reference](#person-reference) to the patient, caregiver, or related person. |
 | patient | reference | no | This is a [person reference](#person-reference) to the patient, only used when the 'sub' is not a patient |
-| intent | string| no | The intention of the launch, this field should be used to provide the intention of the launch such as the preparation, performance or review of the resource, is used, a value from the [FHIR value set RequestIntent](https://www.hl7.org/fhir/R4/valueset-request-intent.html) |
+| intent | string| no | The intention of the launch, this field should be used to provide the intention of the launch such as the preparation, performance or review of the resource, is used, a value from the [FHIR value set RequestIntent](https://build.fhir.org/valueset-task-intent.html) |
 
 An example of the resulting HTI claims:
 
@@ -250,7 +250,7 @@ The HTI claims **MUST** be exchanged as part of a JWT token. The HTI claims are 
 | Resource | resource | The identifier of the task to be executed by the person in the `sub` field. |
 | Definition | definition | A URL that references the definition of the task. |
 | Patient | patient | Optional. This is a [person reference](#person-reference) to the patient, only used when the 'sub' is not a patient |
-|Intent| intent | Optional. The intention of the launch, this field should be used to provide the intention of the launch such as the preparation, performance or review of the resource, is used, a value from the [FHIR value set RequestIntent](https://www.hl7.org/fhir/R4/valueset-request-intent.html) |
+|Intent| intent | Optional. The intention of the launch, this field should be used to provide the intention of the launch such as the preparation, performance or review of the resource, is used, a value from the [FHIR value set RequestIntent](https://build.fhir.org/valueset-task-intent.html) |
 
 The timestamps follows the ["UNIX time"](https://en.wikipedia.org/wiki/Unix_time) convention, being the number of seconds since the epoch.
 
