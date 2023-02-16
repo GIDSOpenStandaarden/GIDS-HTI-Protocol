@@ -86,7 +86,7 @@ The health tool interoperability standard (HTI) connects portals with modules li
 * Domain, the scope of the data shared in the launch.
 
 ### Domain model
-The launch message consists of a task object. The task object consists of the following fields:
+The launch message consists of a conceptual task. The conceptual task consists of the following fields:
 * A reference to the user.
 * A reference to the definition of the task.
 Schematically, the relationship between the entities is displayed below:
@@ -418,6 +418,9 @@ As the creation of the message is the responsibility of the portal application, 
 | ------------- |
 | This HTI:core specification **MAY** be extended with profiles that extend this specification, replace parts of this specification, or define additional parts to this specification. Such a profile **MUST** be documented properly, and it **MUST** be clear about the relation to the HTI:core standard. The profile **MUST** be identified with a namespaced identifier starting with “HTI:”. |
 
+ # Mapping between HTI 1 and 2
+
+ TODO:
 
  # Connection with the SNS Launch protocol
 The SNS launch protocol can be seen as a predecessor of the HTI standard. The main differences are the HTI claims  and the restriction by the HTI standard that prohibits the exchange of personal data. The following observations apply to the migration from SNS launch to HTI:
