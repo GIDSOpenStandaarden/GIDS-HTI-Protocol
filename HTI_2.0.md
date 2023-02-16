@@ -118,7 +118,7 @@ The user identifier **MUST** be unique in each domain, and **MUST NOT** be share
 ![](images/image9.png)
 
 #### User consent
-The HTI:core specification specifically prohibits the exchange of personal data, however specific profiles that extend the HTI:core standard are allowed to exchange personal data. Thereby the HTI:core standard states that, If one of the systems in the domain transfers information from one system to another system in the domain, the user **MUST** provide consent. When asking consent ,the user **MUST** be informed about all of the following:
+The HTI:core specification specifically prohibits the exchange of personal data, however specific profiles that extend the HTI:core standard are allowed to exchange personal data. Thereby the HTI:core standard states that, If one of the systems in the domain transfers information from one system to another system in the domain, the user **MUST** provide consent. When asking consent, the user **MUST** be informed about all of the following:
 * The source of the data.
 * What data is shared.
 * With whom it will be shared.
@@ -160,7 +160,7 @@ The diagram below summarizes these concepts.
 ![](images/image20.png)
 
 ### ① The HTI claims
-The message consists of a set of HTI claims. Please note that the HTI version MUST be provided to JWT header to manage changes in the HTI claims beetween versions.
+The message consists of a set of HTI claims. Please note that the HTI version MUST be provided to JWT header to manage changes in the HTI claims between versions.
 
 #### Identifiers and references
 The HTI claims uses references from the FHIR standard. FHIR references have a type (resourceType) and identifier (id). A reference to an object consists of a combination of type and identifier. References to objects in the FHIR standard are notated as follows:
@@ -173,17 +173,17 @@ In the diagram below, an example of such a reference:
     "resource": "Task/a5e5844e"
 }
 ```
-The HTI:core standard defines that the reference format **MUST** align with the FHIR reference format when referencing claims that requiere the reference format.
+The HTI:core standard defines that the reference format **MUST** align with the FHIR reference format when referencing claims that require the reference format.
 
 #### Mapping of the HTI claims
 The table below contains the required and suggested list of fields for the HTI claims, additional specification **MAY** be used in the HTI:core standard, however they **MUST NOT** contain personal information about the user. If you intend to use any additional fields, you **COULD** specify a HTI profile to do so.
 
-| HTI claim | Type | Required | Value |
-|-----------|------|----------|-------|
-| resource | string| yes |  The identifier of the task to be executed by the person in the `sub` field.   |
-| definition | url | no | A URL that references the definition of the task. |
-| sub | reference | yes | This is a [person reference](#person-reference) to the patient, caregiver, or related person. |
-| patient | reference | no | This is a [person reference](#person-reference) to the patient, only used when the 'sub' is not a patient |
+| HTI claim | Type | Required | Value                                                                                                                                                                                                                                                                            |
+|-----------|------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| resource | string| yes | The identifier of the task to be executed by the person in the `sub` field.                                                                                                                                                                                                      |
+| definition | url | no | A URL that references the definition of the task.                                                                                                                                                                                                                                |
+| sub | reference | yes | This is a [person reference](#person-reference) to the patient, practitioner, or related person.                                                                                                                                                                                 |
+| patient | reference | no | This is a [person reference](#person-reference) to the patient, only used when the 'sub' is not a patient                                                                                                                                                                        |
 | intent | string| no | The intention of the launch, this field should be used to provide the intention of the launch such as the preparation, performance or review of the resource, is used, a value from the [FHIR value set RequestIntent](https://build.fhir.org/valueset-task-intent.html) |
 
 An example of the resulting HTI claims:
@@ -192,7 +192,7 @@ An example of the resulting HTI claims:
 {
     "resource": "Task/a5e582ac",
     "definition": "https://module.example.com/ActivityDefinition/a5e58200",
-    "sub": "Caregiver/a5e58253",
+    "sub": "Practitioner/a5e58253",
     "patient" : "Patient/a5e582e",
     "intent": "plan"
 }
@@ -222,9 +222,9 @@ The resource type **MUST** be a FHIR resource type, the FHIR task object does no
  * RelatedPerson
  * Person
 
-In most cases, tasks will be assigned to `Patient`. We advise to use the `Person` type if unsure about the resource type of the `sub` field.
+In most cases, tasks will be assigned to a `Patient`. We advise to use the `Person` type if unsure about the resource type of the `sub` field.
 
-The `patient` field **MAY** be used to denote the patient related to the HTI launch when the launch is executed by someone else than the patient (Caregiver of RelatedPerson). The same rules on format apply as for the `sub` field.
+The `patient` field **MAY** be used to denote the patient related to the HTI launch when the launch is executed by someone else than the patient (Practitioner or RelatedPerson). The same rules on format apply as for the `sub` field.
 
 #### Configuration and storage requirements
 The portal has the following storage and/or configuration requirements:
@@ -264,7 +264,7 @@ The code fragment below shows the HTI claims as part of the JWT message payload.
   "iss": "https://portal.example.com",
   "exp": 1585565745,
   "jti": "679e1e4c-bcb9-4fcc-80c4-f36e7063545c"
-  "sub" : "Caregiver/a5e58253",
+  "sub" : "Practitioner/a5e58253",
   "resource" : "Task/11",
   "definition" : "https://module.example.com/ActivityDefinition/a5e58200",
   "patient" : "Patient/a5e582e",
@@ -376,7 +376,7 @@ This section provides an overview of the requirements and responsibilities in Mo
 | ------------- |
 | The HTI claims MUST only contain information about the functional task, the definition of the task, and the people involved. |
 | The JWT message MUST only contain information about the sending system, the recipient system and the message itself, with exception to the `sub` field. |
-| The  exchange of the message MUST NOT contain any information about: |
+| The exchange of the message MUST NOT contain any information about: |
 | * the functional task, the definition of the task, and the people involved, and |
 | * information about the sending system, the recipient system and the message itself. |
 | The fields used in the HTI claims object MUST match the table HTI claims field mapping. |
@@ -425,13 +425,13 @@ The SNS launch protocol can be seen as a predecessor of the HTI standard. The ma
 
 Based on the changes above, the mapping between the fields is as follows:
 
-| Field(s) in SNS| Field(s) in HTI | Remark |
-| ------------- | ------------- | ------------- |
-| | resource | New in HTI |
-| email, given_name, middle_name and family_name | - | Not mapped in HTI |
-| User identity (sub) | Task/for/reference | Should be prepended with Person/Patient/Caregiver/RelatedPerson |
-| Subject (resource_id) | definition | Should be a canonical reference in HTI |
-| iss, aud, jti iat, and exp | iss, aud, jti iat, and exp | All other fields are mapped the same. |
+| Field(s) in SNS| Field(s) in HTI | Remark                                                             |
+| ------------- | ------------- |--------------------------------------------------------------------|
+| | resource | New in HTI                                                         |
+| email, given_name, middle_name and family_name | - | Not mapped in HTI                                                  |
+| User identity (sub) | Task/for/reference | Should be prepended with Person/Patient/Practitioner/RelatedPerson |
+| Subject (resource_id) | definition | Should be a canonical reference in HTI                             |
+| iss, aud, jti iat, and exp | iss, aud, jti iat, and exp | All other fields are mapped the same.                              |
 
 # HTI on Mobile
 The HTI protocol can be used in mobile scenario's. With the concept of _deep linking_ the HTI token can be forwarded to the mobile application. In order to do so, the application needs to register an URL pattern with the underlying operating system, and the launching application needs to set the right context in order for the link to the application to work. For both Android and iOS the concepts are similar, the implementation details differ.
