@@ -207,7 +207,7 @@ The table below contains the required and suggested list of fields, additional f
 | instantiatesCanonical | no | A [canonical](http://hl7.org/fhir/R4/references.html#canonical) URL that references the FHIR definition. More details are described in the [activity definition](https://www.hl7.org/fhir/activitydefinition.html) documentation. |
 | for | yes | A [person reference](#person-reference) to the user that should execute the task. |
 | intent | no | This field **MAY** be populated with a value from the [App Launch Intent](https://build.fhir.org/ig/HL7/smart-app-launch/scopes-and-launch-context.html#launch-intent). |
-| status | yes | Status of the task. This field must be populated with one of the values defined by the [FHIR value set TaskStatus](https://www.hl7.org/fhir/R4/valueset-task-status.html).|
+| status | yes | Status of the task. This field must be populated with one of the values defined by the [FHIR value set TaskStatus](https://www.hl7.org/fhir/R4/valueset-task-status.html). |
 
 An example of the resulting FHIR task object:
 
