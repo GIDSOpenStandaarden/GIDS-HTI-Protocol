@@ -160,7 +160,7 @@ The diagram below summarizes these concepts.
 ![](images/image20.png)
 
 ### ① The HTI claims
-The message consists of a set of HTI claims. Please note that the HTI version MUST be provided to JWT header to manage changes in the HTI claims between versions.
+The message consists of a set of HTI claims. Please note that the HTI version MUST be provided as the JWT claim `hti-version` to manage changes in the protocol between versions.
 
 #### Identifiers and references
 The HTI claims uses references from the FHIR standard. FHIR references have a type (resourceType) and identifier (id). A reference to an object consists of a combination of type and identifier. References to objects in the FHIR standard are notated as follows:
