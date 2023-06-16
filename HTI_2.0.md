@@ -160,7 +160,7 @@ The diagram below summarizes these concepts.
 ![](images/image20.png)
 
 ### ① The HTI claims
-The message consists of a set of HTI claims. Please note that the HTI version MUST be provided as the JWT claim `hti-version` to manage changes in the protocol between versions.
+The message consists of a set of HTI claims. Please note that the HTI version SHOUD be provided as the JWT claim `hti-version` to manage changes in the protocol between versions.
 
 #### Identifiers and references
 The HTI claims uses references from the FHIR standard. FHIR references have a type (resourceType) and identifier (id). A reference to an object consists of a combination of type and identifier. References to objects in the FHIR standard are notated as follows:
@@ -185,7 +185,7 @@ The table below contains the required and suggested list of fields for the HTI c
 | sub | reference | yes | This is a [person reference](#person-reference) to the patient, practitioner, or related person.                                                                                                                                                                                 |
 | patient | reference | no | This is a [person reference](#person-reference) to the patient, only used when the 'sub' is not a patient                                                                                                                                                                        |
 | intent | string| no | The intention of the launch, this field should be used to provide the intention of the launch such as the preparation, performance or review of the resource, is used, this field **MAY** be populated with a value from the [SMART on FHIR App Launch Intent](https://build.fhir.org/ig/HL7/smart-app-launch/scopes-and-launch-context.html#launch-intent). |
-| hti-version | string | yes | The HTI version, needs to match the used HTI version. |
+| hti-version | string | no | The HTI version, needs to match the used HTI version. |
 
 An example of the resulting HTI claims:
 
@@ -196,7 +196,7 @@ An example of the resulting HTI claims:
     "sub": "Practitioner/a5e58253",
     "patient" : "Patient/a5e582e",
     "intent": "plan",
-    "hti-version": "2.0",
+    "hti-version": "2.0"
 }
 ```
 
