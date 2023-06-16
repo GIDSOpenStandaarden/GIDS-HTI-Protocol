@@ -185,7 +185,7 @@ The table below contains the required and suggested list of fields for the HTI c
 | sub | reference | yes | This is a [person reference](#person-reference) to the patient, practitioner, or related person.                                                                                                                                                                                 |
 | patient | reference | no | This is a [person reference](#person-reference) to the patient, only used when the 'sub' is not a patient                                                                                                                                                                        |
 | intent | string| no | The intention of the launch, this field should be used to provide the intention of the launch such as the preparation, performance or review of the resource, is used, this field **MAY** be populated with a value from the [SMART on FHIR App Launch Intent](https://build.fhir.org/ig/HL7/smart-app-launch/scopes-and-launch-context.html#launch-intent). |
-| hti-version | string | no | The HTI version, needs to match the used HTI version. |
+| hti-version | string | no | The HTI version, needs to match the used HTI version. If not provided 2.0 must be assumed. |
 
 An example of the resulting HTI claims:
 
