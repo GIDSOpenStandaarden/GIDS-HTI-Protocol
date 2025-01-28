@@ -230,7 +230,7 @@ The `patient` field **MAY** be used to denote the patient related to the HTI lau
 
 #### Configuration and storage requirements
 The portal has the following storage and/or configuration requirements:
- * The `definition` of the HTI claims (s) of the module (s) need to be configured, having an agreed upon identifier, and optionally the name, image and description. To do so, the FHIR ActivityDefinition object **MAY** be used.
+ * The `definition` of the HTI claims of the module(s) need to be configured, having an agreed upon identifier, and optionally the name, image and description. To do so, the FHIR ActivityDefinition object **MAY** be used.
  * The `resource` of the HTI claims **MUST** represent a specific instance of an activity definition performed by a user and **MUST** be persistent over the timeframe the instance is active.
  * The user identifier (`sub` and `patient` field) **MUST** be both unique and persistent in each domain.
 
