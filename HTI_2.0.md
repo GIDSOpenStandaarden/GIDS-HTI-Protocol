@@ -374,25 +374,26 @@ This section provides an overview of the requirements and responsibilities in Mo
 
 ## The portal application
 
-| Description |
-| ------------- |
-| The HTI claims MUST only contain information about the functional task, the definition of the task, and the people involved. |
-| The JWT message MUST only contain information about the sending system, the recipient system and the message itself, with exception to the `sub` field. |
-| The exchange of the message MUST NOT contain any information about: |
-| * the functional task, the definition of the task, and the people involved, and |
-| * information about the sending system, the recipient system and the message itself. |
-| The fields used in the HTI claims object MUST match the table HTI claims field mapping. |
-| The resource field MUST be persistent over the timeframe the task is active. |
-| The definition reference MUST be an URI |
- | The user identifier (`sub` and `patient`) MUST be a persistent pseudo identifier. |
- | The user identifier (`sub` and `patient`) MUST be both unique and persistent in each domain |
- | The user identifier (`sub` field) MUST be used for the user that should execute the task. |
- | The user identifier (`sub`) MUST be used for the user that is launching the task. |
+| Description                                                                                                                                                                                                                                                     |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| The JWT Header MUST contain the HTI version of the HTI token.                                                                                                                                                                                                   |
+| The HTI claims MUST only contain information about the functional task, the definition of the task, and the people involved.                                                                                                                                    |
+| The JWT message MUST only contain information about the sending system, the recipient system and the message itself, with exception to the `sub` field.                                                                                                         |
+| The exchange of the message MUST NOT contain any information about:                                                                                                                                                                                             |
+| * the functional task, the definition of the task, and the people involved, and                                                                                                                                                                                 |
+| * information about the sending system, the recipient system and the message itself.                                                                                                                                                                            |
+| The fields used in the HTI claims object MUST match the table HTI claims field mapping.                                                                                                                                                                         |
+| The resource field MUST be persistent over the timeframe the task is active.                                                                                                                                                                                    |
+| The definition reference MUST be an URI                                                                                                                                                                                                                         |
+ | The user identifier (`sub` and `patient`) MUST be a persistent pseudo identifier.                                                                                                                                                                               |
+ | The user identifier (`sub` and `patient`) MUST be both unique and persistent in each domain                                                                                                                                                                     |
+ | The user identifier (`sub` field) MUST be used for the user that should execute the task.                                                                                                                                                                       |
+ | The user identifier (`sub`) MUST be used for the user that is launching the task.                                                                                                                                                                               |
  | The user identifier (`sub` and `patient`) MUST be a FHIR user reference and of format: &lt;ResourceType&gt;/&lt;Identifier&gt;. The resource type MUST be a FHIR resource, and MAY be one of, and not limited, to: Patient, Practitioner, RelatedPerson, Person |
- | The fields used in the JWT payload MUST match the table JWT field mapping. |
- | The JWT MUST use an asymmetric public / private key to sign the JWT tokens. |
- | The JWT token MUST be exchanged with the module by a form encoded POST request, the token MUST be in the “token” field. |
- | The JWT token MUST be exchanged over an encrypted http (https) connection. |
+ | The fields used in the JWT payload MUST match the table JWT field mapping.                                                                                                                                                                                      |
+ | The JWT MUST use an asymmetric public / private key to sign the JWT tokens.                                                                                                                                                                                     |
+ | The JWT token MUST be exchanged with the module by a form encoded POST request, the token MUST be in the “token” field.                                                                                                                                         |
+ | The JWT token MUST be exchanged over an encrypted http (https) connection.                                                                                                                                                                                      |
 
  ## The module application
 As the creation of the message is the responsibility of the portal application, the module application can assume that most the restrictions and limitations are implemented correctly by the portal application. However, the portal application does have some extra responsibilities that it MUST be enforcing.
