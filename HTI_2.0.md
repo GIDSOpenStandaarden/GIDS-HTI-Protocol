@@ -249,7 +249,7 @@ The HTI claims **MUST** be exchanged as part of a JWT token. The HTI claims are 
 | Issue time | iat | The timestamp of generating the JWT token, the value of this field **MUST** be validated by the module provider to not be in the future. |
 | Expiration time | exp | The "exp" (expiration time) claim identifies the expiration time on or after which the JWT **MUST NOT** be accepted for processing. The value **MUST** be limited to 5 minutes. This value **MUST** be validated by the module provider, any value that exceeds the timeout **MUST** be rejected. |
 | Subject | sub | This value **MUST** be a person reference to the user executing the launch. This way, applications can understand _who_ is launching the provided `Task`. For example, `Practitioner/82421`  |
-| Resource | resource | The identifier of the task to be executed by the person in the `sub` field. |
+| Resource | resource | The identifier of the task being launched by the person in the `sub` field. |
 | Definition | definition | A URL that references the definition of the task. |
 | Patient | patient | Optional. This is a [person reference](#person-reference) of type Patient to the patient, only used when the 'sub' is not a patient or the sub is another patient. |
 |Intent| intent | Optional. The intention of the launch, this field should be used to provide the intention of the launch such as the preparation, performance or review of the resource, is used, a value from the [FHIR value set RequestIntent](https://build.fhir.org/valueset-task-intent.html) |
