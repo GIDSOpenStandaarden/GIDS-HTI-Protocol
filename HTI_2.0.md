@@ -173,7 +173,7 @@ In the diagram below, an example of such a reference:
     "resource": "Task/a5e5844e"
 }
 ```
-The HTI:core standard defines that the reference format **MUST** align with the FHIR reference format when referencing claims that require the reference format.
+The HTI:core standard defines that the reference format **MUST** align with the FHIR R4 reference format when referencing claims that require the reference format.
 
 #### Mapping of the HTI claims
 The table below contains the required and suggested list of fields for the HTI claims, additional specification **MAY** be used in the HTI:core standard, however they **MUST NOT** contain personal information about the user. If you intend to use any additional fields, you **COULD** specify a HTI profile to do so.
