@@ -392,25 +392,25 @@ This section provides an overview of the requirements and responsibilities in Mo
  | The user identifier (`sub` and `patient`) MUST be a FHIR user reference and of format: &lt;ResourceType&gt;/&lt;Identifier&gt;. The resource type MUST be a FHIR resource, and MAY be one of, and not limited, to: Patient, Practitioner, RelatedPerson, Person |
  | The JWT MUST use an asymmetric public / private key to sign the JWT tokens.                                                                                                                                                                                     |
  | The JWT token MUST be exchanged with the module by a form encoded POST request, the token MUST be in the “token” field.                                                                                                                                         |
- | The JWT token MUST be exchanged over an encrypted http (https) connection.                                                                                                                                                                                      |
+ | The JWT token MUST be exchanged over an encrypted http (https) connection, at least TLS version 1.2                                                                                                                                                             |
 
  ## The module application
 As the creation of the message is the responsibility of the portal application, the module application can assume that most the restrictions and limitations are implemented correctly by the portal application. However, the portal application does have some extra responsibilities that it MUST be enforcing.
 
-| Description |
-| ------------- |
-| The module application **MUST** expose the launch URL on a secure connection (https). |
+| Description                                                                                                                                                                                                                                                                          |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| The module application **MUST** expose the launch URL on a secure connection (https) with at least TLS 1.2.                                                                                                                                                                          |
 | The module application **MUST NOT** expose any of the following information in the launch URL:<ul><li>the functional task, the definition of the task, and the people involved, and <li>information about the sending system, the recipient system and the message itself.</li></ul> |
-| The portal application **MAY** additionally identify the user and link that data to the persistent pseudo identifier of the HTI claims (`sub` field). |
-| The module **MUST** support at least the following JWT signing algorithms: RS256, RS384, and RS512 and ES256, ES384, and ES512 |
-| The JWT message **MUST** be validated on the following |
-| The audience (aud) **MUST** match the module application. |
-| The issuer (iss) **MUST** be known to the system. |
-| The Subject (sub) **SHOULD** be used to identify *who* is launching the Task. |
-| The public key of the issuer **MUST** be used to validate the signature of the message. |
-| The JWT identifier (jti) **MUST** be validated against replay attacks. |
-| The expiration time (exp) of the JWT token **MUST** be validated. |
-| The Issue time (iat) **MUST** be validated. |
+| The portal application **MAY** additionally identify the user and link that data to the persistent pseudo identifier of the HTI claims (`sub` field).                                                                                                                                |
+| The module **MUST** support at least the following JWT signing algorithms: RS256, RS384, and RS512 and ES256, ES384, and ES512                                                                                                                                                       |
+| The JWT message **MUST** be validated on the following                                                                                                                                                                                                                               |
+| The audience (aud) **MUST** match the module application.                                                                                                                                                                                                                            |
+| The issuer (iss) **MUST** be known to the system.                                                                                                                                                                                                                                    |
+| The Subject (sub) **SHOULD** be used to identify *who* is launching the Task.                                                                                                                                                                                                        |
+| The public key of the issuer **MUST** be used to validate the signature of the message.                                                                                                                                                                                              |
+| The JWT identifier (jti) **MUST** be validated against replay attacks.                                                                                                                                                                                                               |
+| The expiration time (exp) of the JWT token **MUST** be validated.                                                                                                                                                                                                                    |
+| The Issue time (iat) **MUST** be validated.                                                                                                                                                                                                                                          |
 
  ## General requirements
 
