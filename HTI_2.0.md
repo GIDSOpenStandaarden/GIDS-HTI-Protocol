@@ -420,7 +420,19 @@ As the creation of the message is the responsibility of the portal application, 
 
  # Mapping between HTI 1 and 2
 
- TODO:
+The difference between HTI 1 and 2 is primarily the removal of the FHIR task entity from the HTI claims body. To map
+between HTI 1 and 2, the following field mapping applies:
+
+| HTI 1 field                  | HTI 2 field         | remark                                                                                                                                                                                                                    |
+|------------------------------|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `task.resourceType`          | not mapped          | the `resource` field can be mapped to a FHIR task by reference                                                                                                                                                            |
+| `task.id `                   | not mapped          | the `resource` field can be mapped to a FHIR task by reference                                                                                                                                                            |
+| `task.instantiatesCanonical` | `definition`        | This field is mapped to the `definition` field.                                                                                                                                                                           |
+| `task.for`                   | `sub` and `patient` | This field is mapped to the `sub` field. The `sub` points to the person responsible for (executing) the task, the `patient` field points to the involved patient if the patient is not responsible for executing te task. |
+| `sub`                        | `sub`               | This mapping remains the same, in HTI 1 this field was identical to the `Task.for` field.                                                                                                                                 |
+| `task.intent`                | `intent`            | This field is mapped to the `intent` field.                                                                                                                                                                               |
+| `task.status`                | `status`            | This field is mapped to the `status` field.                                                                                                                                                                               |
+| `fhir-version`               | `hti-version`       | If absent, hti-version 2.0 SHOULD be assumed.                                                                                                                                                                             |
 
  # Connection with the SNS Launch protocol
 The SNS launch protocol can be seen as a predecessor of the HTI standard. The main differences are the HTI claims  and the restriction by the HTI standard that prohibits the exchange of personal data. The following observations apply to the migration from SNS launch to HTI:
@@ -430,13 +442,13 @@ The SNS launch protocol can be seen as a predecessor of the HTI standard. The ma
 
 Based on the changes above, the mapping between the fields is as follows:
 
-| Field(s) in SNS| Field(s) in HTI | Remark                                                             |
-| ------------- | ------------- |--------------------------------------------------------------------|
-| | resource | New in HTI                                                         |
-| email, given_name, middle_name and family_name | - | Not mapped in HTI                                                  |
-| User identity (sub) | Task/for/reference | Should be prepended with Person/Patient/Practitioner/RelatedPerson |
-| Subject (resource_id) | definition | Should be a canonical reference in HTI                             |
-| iss, aud, jti iat, and exp | iss, aud, jti iat, and exp | All other fields are mapped the same.                              |
+| Field(s) in SNS                                | Field(s) in HTI            | Remark                                                             |
+|------------------------------------------------|----------------------------|--------------------------------------------------------------------|
+|                                                | resource                   | New in HTI                                                         |
+| email, given_name, middle_name and family_name | -                          | Not mapped in HTI                                                  |
+| User identity (sub)                            | Task/for/reference         | Should be prepended with Person/Patient/Practitioner/RelatedPerson |
+| Subject (resource_id)                          | definition                 | Should be a canonical reference in HTI                             |
+| iss, aud, jti iat, and exp                     | iss, aud, jti iat, and exp | All other fields are mapped the same.                              |
 
 # HTI on Mobile
 The HTI protocol can be used in mobile scenario's. With the concept of _deep linking_ the HTI token can be forwarded to the mobile application. In order to do so, the application needs to register an URL pattern with the underlying operating system, and the launching application needs to set the right context in order for the link to the application to work. For both Android and iOS the concepts are similar, the implementation details differ.
