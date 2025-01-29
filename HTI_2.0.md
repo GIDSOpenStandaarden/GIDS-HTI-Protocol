@@ -160,7 +160,7 @@ The diagram below summarizes these concepts.
 ![](images/image20.png)
 
 ### ① The HTI claims
-The message consists of a set of HTI claims. Please note that the HTI version SHOUD be provided as the JWT claim `hti-version` to manage changes in the protocol between versions.
+The message consists of a set of HTI claims. Please note that the HTI version SHOULD be provided as the JWT claim `hti-version` to manage changes in the protocol between versions.
 
 #### Identifiers and references
 The HTI claims uses references from the FHIR standard. FHIR references have a type (resourceType) and identifier (id). A reference to an object consists of a combination of type and identifier. References to objects in the FHIR standard are notated as follows:
@@ -376,7 +376,7 @@ This section provides an overview of the requirements and responsibilities in Mo
 
 | Description                                                                                                                                                                                                                                                     |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| The JWT Header MUST contain the HTI version of the HTI token.                                                                                                                                                                                                   |
+| The JWT Body MUST contain the HTI version of the HTI token in the `hti-version` claim.                                                                                                                                                                          |
 | The HTI claims MUST only contain information about the functional task, the definition of the task, and the people involved.                                                                                                                                    |
 | The JWT message MUST only contain information about the sending system, the recipient system and the message itself, with exception to the `sub` field.                                                                                                         |
 | The exchange of the message MUST NOT contain any information about:                                                                                                                                                                                             |
