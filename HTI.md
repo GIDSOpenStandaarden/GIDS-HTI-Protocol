@@ -488,7 +488,7 @@ The concept of deep linking can also be applied to apps that are not already ins
 # Test tools and validators
 ## Introduction
 
-A testsuite for both the development of [the module](https://hti-test-suite.sns.gidsopenstandaarden.org/module.html) and [the portal](https://hti-test-suite.sns.gidsopenstandaarden.org/portal.html) applications is available in github.
+A testsuite for both the development of [the module](https://hti-test-suite.services.gidsopenstandaarden.org/module.html) and [the portal](https://hti-test-suite.services.gidsopenstandaarden.org/portal.html) applications is available in github.
 By clicking the Information icon, information regarding the field will be displayed.
 
 ## The module testsuite
